@@ -7,48 +7,54 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8E7AE83020C70CEE00A55C91 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7AE82F20C70CEE00A55C91 /* AppDelegate.swift */; };
-		8E7AE83220C70CEE00A55C91 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7AE83120C70CEE00A55C91 /* ViewController.swift */; };
-		8E7AE83520C70CEE00A55C91 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E7AE83320C70CEE00A55C91 /* Main.storyboard */; };
-		8E7AE83820C70CEE00A55C91 /* giphySearch.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8E7AE83620C70CEE00A55C91 /* giphySearch.xcdatamodeld */; };
-		8E7AE83A20C70CF000A55C91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E7AE83920C70CF000A55C91 /* Assets.xcassets */; };
-		8E7AE83D20C70CF000A55C91 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E7AE83B20C70CF000A55C91 /* LaunchScreen.storyboard */; };
-		8E7AE84820C70CF000A55C91 /* giphySearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7AE84720C70CF000A55C91 /* giphySearchTests.swift */; };
+		8E29FC0920C6E1B400A7CC52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E29FC0820C6E1B400A7CC52 /* AppDelegate.swift */; };
+		8E29FC0B20C6E1B400A7CC52 /* GifStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E29FC0A20C6E1B400A7CC52 /* GifStreamViewController.swift */; };
+		8E29FC0E20C6E1B400A7CC52 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E29FC0C20C6E1B400A7CC52 /* Main.storyboard */; };
+		8E29FC1120C6E1B400A7CC52 /* giphySearch.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8E29FC0F20C6E1B400A7CC52 /* giphySearch.xcdatamodeld */; };
+		8E29FC1320C6E1B600A7CC52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E29FC1220C6E1B600A7CC52 /* Assets.xcassets */; };
+		8E29FC1620C6E1B600A7CC52 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E29FC1420C6E1B600A7CC52 /* LaunchScreen.storyboard */; };
+		8E29FC2120C6E1B600A7CC52 /* giphySearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E29FC2020C6E1B600A7CC52 /* giphySearchTests.swift */; };
+		8E29FC2F20C6E47D00A7CC52 /* Gif.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E29FC2E20C6E47D00A7CC52 /* Gif.swift */; };
+		8E29FC3120C6E4B000A7CC52 /* GifCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E29FC3020C6E4B000A7CC52 /* GifCollectionViewCell.swift */; };
+		8E29FC3520C6E54900A7CC52 /* Gifs.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8E29FC3420C6E54900A7CC52 /* Gifs.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		8E7AE84420C70CF000A55C91 /* PBXContainerItemProxy */ = {
+		8E29FC1D20C6E1B600A7CC52 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 8E7AE82420C70CEE00A55C91 /* Project object */;
+			containerPortal = 8E29FBFD20C6E1B400A7CC52 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 8E7AE82B20C70CEE00A55C91;
+			remoteGlobalIDString = 8E29FC0420C6E1B400A7CC52;
 			remoteInfo = giphySearch;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		8E7AE82C20C70CEE00A55C91 /* giphySearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = giphySearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8E7AE82F20C70CEE00A55C91 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8E7AE83120C70CEE00A55C91 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		8E7AE83420C70CEE00A55C91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8E7AE83720C70CEE00A55C91 /* giphySearch.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = giphySearch.xcdatamodel; sourceTree = "<group>"; };
-		8E7AE83920C70CF000A55C91 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		8E7AE83C20C70CF000A55C91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8E7AE83E20C70CF000A55C91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8E7AE84320C70CF000A55C91 /* giphySearchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = giphySearchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8E7AE84720C70CF000A55C91 /* giphySearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = giphySearchTests.swift; sourceTree = "<group>"; };
-		8E7AE84920C70CF000A55C91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8E29FC0520C6E1B400A7CC52 /* giphySearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = giphySearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E29FC0820C6E1B400A7CC52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		8E29FC0A20C6E1B400A7CC52 /* GifStreamViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifStreamViewController.swift; sourceTree = "<group>"; };
+		8E29FC0D20C6E1B400A7CC52 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		8E29FC1020C6E1B400A7CC52 /* giphySearch.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = giphySearch.xcdatamodel; sourceTree = "<group>"; };
+		8E29FC1220C6E1B600A7CC52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8E29FC1520C6E1B600A7CC52 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8E29FC1720C6E1B600A7CC52 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8E29FC1C20C6E1B600A7CC52 /* giphySearchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = giphySearchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E29FC2020C6E1B600A7CC52 /* giphySearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = giphySearchTests.swift; sourceTree = "<group>"; };
+		8E29FC2220C6E1B600A7CC52 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8E29FC2E20C6E47D00A7CC52 /* Gif.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gif.swift; sourceTree = "<group>"; };
+		8E29FC3020C6E4B000A7CC52 /* GifCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifCollectionViewCell.swift; sourceTree = "<group>"; };
+		8E29FC3420C6E54900A7CC52 /* Gifs.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Gifs.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8E7AE82920C70CEE00A55C91 /* Frameworks */ = {
+		8E29FC0220C6E1B400A7CC52 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8E7AE84020C70CF000A55C91 /* Frameworks */ = {
+		8E29FC1920C6E1B600A7CC52 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -58,57 +64,100 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8E7AE82320C70CEE00A55C91 = {
+		8E29FBFC20C6E1B400A7CC52 = {
 			isa = PBXGroup;
 			children = (
-				8E7AE82E20C70CEE00A55C91 /* giphySearch */,
-				8E7AE84620C70CF000A55C91 /* giphySearchTests */,
-				8E7AE82D20C70CEE00A55C91 /* Products */,
+				8E29FC0720C6E1B400A7CC52 /* giphySearch */,
+				8E29FC1F20C6E1B600A7CC52 /* giphySearchTests */,
+				8E29FC0620C6E1B400A7CC52 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		8E7AE82D20C70CEE00A55C91 /* Products */ = {
+		8E29FC0620C6E1B400A7CC52 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8E7AE82C20C70CEE00A55C91 /* giphySearch.app */,
-				8E7AE84320C70CF000A55C91 /* giphySearchTests.xctest */,
+				8E29FC0520C6E1B400A7CC52 /* giphySearch.app */,
+				8E29FC1C20C6E1B600A7CC52 /* giphySearchTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8E7AE82E20C70CEE00A55C91 /* giphySearch */ = {
+		8E29FC0720C6E1B400A7CC52 /* giphySearch */ = {
 			isa = PBXGroup;
 			children = (
-				8E7AE82F20C70CEE00A55C91 /* AppDelegate.swift */,
-				8E7AE83120C70CEE00A55C91 /* ViewController.swift */,
-				8E7AE83320C70CEE00A55C91 /* Main.storyboard */,
-				8E7AE83920C70CF000A55C91 /* Assets.xcassets */,
-				8E7AE83B20C70CF000A55C91 /* LaunchScreen.storyboard */,
-				8E7AE83E20C70CF000A55C91 /* Info.plist */,
-				8E7AE83620C70CEE00A55C91 /* giphySearch.xcdatamodeld */,
+				8E29FC0820C6E1B400A7CC52 /* AppDelegate.swift */,
+				8E29FC0F20C6E1B400A7CC52 /* giphySearch.xcdatamodeld */,
+				8E29FC2C20C6E3DD00A7CC52 /* View Controllers */,
+				8E29FC2D20C6E45700A7CC52 /* Models */,
+				8E29FC3220C6E4B500A7CC52 /* Views */,
+				8E29FC2B20C6E3C700A7CC52 /* Assets */,
+				8E29FC3320C6E4D900A7CC52 /* Storyboards & Xibs */,
+				8E29FC1720C6E1B600A7CC52 /* Info.plist */,
 			);
 			path = giphySearch;
 			sourceTree = "<group>";
 		};
-		8E7AE84620C70CF000A55C91 /* giphySearchTests */ = {
+		8E29FC1F20C6E1B600A7CC52 /* giphySearchTests */ = {
 			isa = PBXGroup;
 			children = (
-				8E7AE84720C70CF000A55C91 /* giphySearchTests.swift */,
-				8E7AE84920C70CF000A55C91 /* Info.plist */,
+				8E29FC2020C6E1B600A7CC52 /* giphySearchTests.swift */,
+				8E29FC2220C6E1B600A7CC52 /* Info.plist */,
 			);
 			path = giphySearchTests;
+			sourceTree = "<group>";
+		};
+		8E29FC2B20C6E3C700A7CC52 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				8E29FC1220C6E1B600A7CC52 /* Assets.xcassets */,
+				8E29FC3420C6E54900A7CC52 /* Gifs.plist */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		8E29FC2C20C6E3DD00A7CC52 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				8E29FC0A20C6E1B400A7CC52 /* GifStreamViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		8E29FC2D20C6E45700A7CC52 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8E29FC2E20C6E47D00A7CC52 /* Gif.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		8E29FC3220C6E4B500A7CC52 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8E29FC3020C6E4B000A7CC52 /* GifCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8E29FC3320C6E4D900A7CC52 /* Storyboards & Xibs */ = {
+			isa = PBXGroup;
+			children = (
+				8E29FC1420C6E1B600A7CC52 /* LaunchScreen.storyboard */,
+				8E29FC0C20C6E1B400A7CC52 /* Main.storyboard */,
+			);
+			path = "Storyboards & Xibs";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8E7AE82B20C70CEE00A55C91 /* giphySearch */ = {
+		8E29FC0420C6E1B400A7CC52 /* giphySearch */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8E7AE84C20C70CF000A55C91 /* Build configuration list for PBXNativeTarget "giphySearch" */;
+			buildConfigurationList = 8E29FC2520C6E1B600A7CC52 /* Build configuration list for PBXNativeTarget "giphySearch" */;
 			buildPhases = (
-				8E7AE82820C70CEE00A55C91 /* Sources */,
-				8E7AE82920C70CEE00A55C91 /* Frameworks */,
-				8E7AE82A20C70CEE00A55C91 /* Resources */,
+				8E29FC0120C6E1B400A7CC52 /* Sources */,
+				8E29FC0220C6E1B400A7CC52 /* Frameworks */,
+				8E29FC0320C6E1B400A7CC52 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -116,47 +165,47 @@
 			);
 			name = giphySearch;
 			productName = giphySearch;
-			productReference = 8E7AE82C20C70CEE00A55C91 /* giphySearch.app */;
+			productReference = 8E29FC0520C6E1B400A7CC52 /* giphySearch.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8E7AE84220C70CF000A55C91 /* giphySearchTests */ = {
+		8E29FC1B20C6E1B600A7CC52 /* giphySearchTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8E7AE84F20C70CF000A55C91 /* Build configuration list for PBXNativeTarget "giphySearchTests" */;
+			buildConfigurationList = 8E29FC2820C6E1B600A7CC52 /* Build configuration list for PBXNativeTarget "giphySearchTests" */;
 			buildPhases = (
-				8E7AE83F20C70CF000A55C91 /* Sources */,
-				8E7AE84020C70CF000A55C91 /* Frameworks */,
-				8E7AE84120C70CF000A55C91 /* Resources */,
+				8E29FC1820C6E1B600A7CC52 /* Sources */,
+				8E29FC1920C6E1B600A7CC52 /* Frameworks */,
+				8E29FC1A20C6E1B600A7CC52 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				8E7AE84520C70CF000A55C91 /* PBXTargetDependency */,
+				8E29FC1E20C6E1B600A7CC52 /* PBXTargetDependency */,
 			);
 			name = giphySearchTests;
 			productName = giphySearchTests;
-			productReference = 8E7AE84320C70CF000A55C91 /* giphySearchTests.xctest */;
+			productReference = 8E29FC1C20C6E1B600A7CC52 /* giphySearchTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		8E7AE82420C70CEE00A55C91 /* Project object */ = {
+		8E29FBFD20C6E1B400A7CC52 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0940;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = msadoon;
 				TargetAttributes = {
-					8E7AE82B20C70CEE00A55C91 = {
+					8E29FC0420C6E1B400A7CC52 = {
 						CreatedOnToolsVersion = 9.4;
 					};
-					8E7AE84220C70CF000A55C91 = {
+					8E29FC1B20C6E1B600A7CC52 = {
 						CreatedOnToolsVersion = 9.4;
-						TestTargetID = 8E7AE82B20C70CEE00A55C91;
+						TestTargetID = 8E29FC0420C6E1B400A7CC52;
 					};
 				};
 			};
-			buildConfigurationList = 8E7AE82720C70CEE00A55C91 /* Build configuration list for PBXProject "giphySearch" */;
+			buildConfigurationList = 8E29FC0020C6E1B400A7CC52 /* Build configuration list for PBXProject "giphySearch" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -164,29 +213,30 @@
 				en,
 				Base,
 			);
-			mainGroup = 8E7AE82320C70CEE00A55C91;
-			productRefGroup = 8E7AE82D20C70CEE00A55C91 /* Products */;
+			mainGroup = 8E29FBFC20C6E1B400A7CC52;
+			productRefGroup = 8E29FC0620C6E1B400A7CC52 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8E7AE82B20C70CEE00A55C91 /* giphySearch */,
-				8E7AE84220C70CF000A55C91 /* giphySearchTests */,
+				8E29FC0420C6E1B400A7CC52 /* giphySearch */,
+				8E29FC1B20C6E1B600A7CC52 /* giphySearchTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8E7AE82A20C70CEE00A55C91 /* Resources */ = {
+		8E29FC0320C6E1B400A7CC52 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E7AE83D20C70CF000A55C91 /* LaunchScreen.storyboard in Resources */,
-				8E7AE83A20C70CF000A55C91 /* Assets.xcassets in Resources */,
-				8E7AE83520C70CEE00A55C91 /* Main.storyboard in Resources */,
+				8E29FC1620C6E1B600A7CC52 /* LaunchScreen.storyboard in Resources */,
+				8E29FC3520C6E54900A7CC52 /* Gifs.plist in Resources */,
+				8E29FC1320C6E1B600A7CC52 /* Assets.xcassets in Resources */,
+				8E29FC0E20C6E1B400A7CC52 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8E7AE84120C70CF000A55C91 /* Resources */ = {
+		8E29FC1A20C6E1B600A7CC52 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -196,47 +246,49 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8E7AE82820C70CEE00A55C91 /* Sources */ = {
+		8E29FC0120C6E1B400A7CC52 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E7AE83820C70CEE00A55C91 /* giphySearch.xcdatamodeld in Sources */,
-				8E7AE83220C70CEE00A55C91 /* ViewController.swift in Sources */,
-				8E7AE83020C70CEE00A55C91 /* AppDelegate.swift in Sources */,
+				8E29FC1120C6E1B400A7CC52 /* giphySearch.xcdatamodeld in Sources */,
+				8E29FC3120C6E4B000A7CC52 /* GifCollectionViewCell.swift in Sources */,
+				8E29FC0B20C6E1B400A7CC52 /* GifStreamViewController.swift in Sources */,
+				8E29FC2F20C6E47D00A7CC52 /* Gif.swift in Sources */,
+				8E29FC0920C6E1B400A7CC52 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8E7AE83F20C70CF000A55C91 /* Sources */ = {
+		8E29FC1820C6E1B600A7CC52 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E7AE84820C70CF000A55C91 /* giphySearchTests.swift in Sources */,
+				8E29FC2120C6E1B600A7CC52 /* giphySearchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		8E7AE84520C70CF000A55C91 /* PBXTargetDependency */ = {
+		8E29FC1E20C6E1B600A7CC52 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8E7AE82B20C70CEE00A55C91 /* giphySearch */;
-			targetProxy = 8E7AE84420C70CF000A55C91 /* PBXContainerItemProxy */;
+			target = 8E29FC0420C6E1B400A7CC52 /* giphySearch */;
+			targetProxy = 8E29FC1D20C6E1B600A7CC52 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		8E7AE83320C70CEE00A55C91 /* Main.storyboard */ = {
+		8E29FC0C20C6E1B400A7CC52 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8E7AE83420C70CEE00A55C91 /* Base */,
+				8E29FC0D20C6E1B400A7CC52 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
-		8E7AE83B20C70CF000A55C91 /* LaunchScreen.storyboard */ = {
+		8E29FC1420C6E1B600A7CC52 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8E7AE83C20C70CF000A55C91 /* Base */,
+				8E29FC1520C6E1B600A7CC52 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -244,7 +296,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		8E7AE84A20C70CF000A55C91 /* Debug */ = {
+		8E29FC2320C6E1B600A7CC52 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -301,10 +353,11 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
-		8E7AE84B20C70CF000A55C91 /* Release */ = {
+		8E29FC2420C6E1B600A7CC52 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -354,17 +407,19 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		8E7AE84D20C70CF000A55C91 /* Debug */ = {
+		8E29FC2620C6E1B600A7CC52 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 224WGVVZC5;
 				INFOPLIST_FILE = giphySearch/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -376,13 +431,14 @@
 			};
 			name = Debug;
 		};
-		8E7AE84E20C70CF000A55C91 /* Release */ = {
+		8E29FC2720C6E1B600A7CC52 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 224WGVVZC5;
 				INFOPLIST_FILE = giphySearch/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -394,7 +450,7 @@
 			};
 			name = Release;
 		};
-		8E7AE85020C70CF000A55C91 /* Debug */ = {
+		8E29FC2920C6E1B600A7CC52 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -415,7 +471,7 @@
 			};
 			name = Debug;
 		};
-		8E7AE85120C70CF000A55C91 /* Release */ = {
+		8E29FC2A20C6E1B600A7CC52 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -439,29 +495,29 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8E7AE82720C70CEE00A55C91 /* Build configuration list for PBXProject "giphySearch" */ = {
+		8E29FC0020C6E1B400A7CC52 /* Build configuration list for PBXProject "giphySearch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8E7AE84A20C70CF000A55C91 /* Debug */,
-				8E7AE84B20C70CF000A55C91 /* Release */,
+				8E29FC2320C6E1B600A7CC52 /* Debug */,
+				8E29FC2420C6E1B600A7CC52 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8E7AE84C20C70CF000A55C91 /* Build configuration list for PBXNativeTarget "giphySearch" */ = {
+		8E29FC2520C6E1B600A7CC52 /* Build configuration list for PBXNativeTarget "giphySearch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8E7AE84D20C70CF000A55C91 /* Debug */,
-				8E7AE84E20C70CF000A55C91 /* Release */,
+				8E29FC2620C6E1B600A7CC52 /* Debug */,
+				8E29FC2720C6E1B600A7CC52 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8E7AE84F20C70CF000A55C91 /* Build configuration list for PBXNativeTarget "giphySearchTests" */ = {
+		8E29FC2820C6E1B600A7CC52 /* Build configuration list for PBXNativeTarget "giphySearchTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8E7AE85020C70CF000A55C91 /* Debug */,
-				8E7AE85120C70CF000A55C91 /* Release */,
+				8E29FC2920C6E1B600A7CC52 /* Debug */,
+				8E29FC2A20C6E1B600A7CC52 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -469,17 +525,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		8E7AE83620C70CEE00A55C91 /* giphySearch.xcdatamodeld */ = {
+		8E29FC0F20C6E1B400A7CC52 /* giphySearch.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				8E7AE83720C70CEE00A55C91 /* giphySearch.xcdatamodel */,
+				8E29FC1020C6E1B400A7CC52 /* giphySearch.xcdatamodel */,
 			);
-			currentVersion = 8E7AE83720C70CEE00A55C91 /* giphySearch.xcdatamodel */;
+			currentVersion = 8E29FC1020C6E1B400A7CC52 /* giphySearch.xcdatamodel */;
 			path = giphySearch.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
 /* End XCVersionGroup section */
 	};
-	rootObject = 8E7AE82420C70CEE00A55C91 /* Project object */;
+	rootObject = 8E29FBFD20C6E1B400A7CC52 /* Project object */;
 }
