@@ -6,6 +6,7 @@ target 'giphySearch' do
   use_frameworks!
 
   # Pods for giphySearch
+  pod 'FLAnimatedImage', '~> 1.0'
 
   target 'giphySearchTests' do
     inherit! :search_paths
