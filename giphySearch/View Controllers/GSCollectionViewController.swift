@@ -1,5 +1,5 @@
 //FLAnimatedImageView
-//  GifStreamViewController.swift
+//  GSGifStreamViewController.swift
 //  giphySearch
 //
 //  Created by Mubarak Sadoon on 2018-06-05.
@@ -9,11 +9,10 @@
 //Custom bar button credit: https://stackoverflow.com/questions/5761183/change-position-of-uibarbuttonitem-in-uinavigationbar
 
 import UIKit
-import AVFoundation
+import FLAnimatedImage
 
 class GSCollectionViewController: UICollectionViewController {
     
-    var gifs:[Gif] = []
     var selectedIndexPath:IndexPath? = nil
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -22,25 +21,13 @@ class GSCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //        NetworkManager.getGiphs(searchTerm:"cats", completion: { (status, records) in
-        //
-        //            if status {
-        //                self.gifs = records
-        //                self.collectionView?.reloadData()
-        //            }
-        //
-        //        })
+
+        GSDataManager.sharedInstance.getAllGiphJSONData(searchTerm: "Cats")
         
         self.navigationController?.delegate = self
         
         if let layout = collectionView?.collectionViewLayout as? GSCollectionViewLayout {
             layout.delegate = self
-        }
-        
-        for index in 1...12 {
-            if let imageFound = UIImage(named: "\(index).jpg") {
-                gifs.append(Gif(image: imageFound))
-            }
         }
         
         self.collectionView?.reloadData()
@@ -50,6 +37,26 @@ class GSCollectionViewController: UICollectionViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateCollectionView), name: .newGifsDownloaded, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: .newGifsDownloaded, object: nil)
+    }
+    
+    //MARK: Helper Methods
+    
+    //MARK: Notification Methods
+    @objc func updateCollectionView() {
+        DispatchQueue.main.async {
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+            self.collectionView?.reloadData()
+        }
+    }
+    
 }
 
 //MARK: UINavigationController Delegate Methods
@@ -57,7 +64,7 @@ class GSCollectionViewController: UICollectionViewController {
 extension GSCollectionViewController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         if let foundSelectedIndexPath = selectedIndexPath {
-            return GCTransitionCustomAnimator(operation: operation, indexPath: foundSelectedIndexPath)
+            return GSTransitionCustomAnimator(operation: operation, indexPath: foundSelectedIndexPath)
         } else {
             return nil
         }
@@ -69,13 +76,13 @@ extension GSCollectionViewController: UINavigationControllerDelegate {
 extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return gifs.count
+        return GSDataManager.sharedInstance.allGifsForCurrentSearchTerm().count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GifCollectionViewCell", for: indexPath) as! GifCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GSGifCollectionViewCell", for: indexPath) as! GSGifCollectionViewCell
         
-        cell.imageView.image = gifs[indexPath.row].image
+        cell.imageView.animatedImage = GSDataManager.sharedInstance.allGifsForCurrentSearchTerm()[indexPath.row].image
         
         return cell
     }
@@ -88,7 +95,7 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
     override func collectionView(_ collectionView: UICollectionView,
                                  willDisplay cell: UICollectionViewCell,
                                  forItemAt indexPath: IndexPath) {
-        if cell is GifCollectionViewCell {
+        if cell is GSGifCollectionViewCell {
             cell.layoutSubviews()
         }
     }
@@ -96,13 +103,13 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
     override func collectionView(_ collectionView: UICollectionView,
                                  didSelectItemAt indexPath: IndexPath) {
         
-        guard let _:GifCollectionViewCell = self.collectionView?.cellForItem(at: indexPath) as? GifCollectionViewCell,
+        guard let _:GSGifCollectionViewCell = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell,
               let gifDetailVC = storyboard?.instantiateViewController(withIdentifier: "GSDetailViewControllerID") as? GSDetailViewController else {
             return
         }
         
         selectedIndexPath = indexPath
-        gifDetailVC.mainGif = gifs[indexPath.row].image
+        gifDetailVC.mainGif = GSDataManager.sharedInstance.allGifsForCurrentSearchTerm()[indexPath.row].image
         self.navigationController?.pushViewController(gifDetailVC, animated: true)
     }
     
@@ -112,6 +119,11 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
 
 extension GSCollectionViewController: GSCollectionViewLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, heightForImageAtIndexPath indexPath: IndexPath) -> CGFloat {
-        return gifs[indexPath.item].image.size.height
+        if let foundImage:FLAnimatedImage = GSDataManager.sharedInstance.allGifsForCurrentSearchTerm()[indexPath.item].image {
+            return foundImage.size.height
+        } else {
+            return 0
+        }
     }
 }
+

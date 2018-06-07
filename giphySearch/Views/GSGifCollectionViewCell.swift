@@ -1,5 +1,5 @@
 //
-//  GifCollectionViewCell.swift
+//  GSGifCollectionViewCell.swift
 //  giphySearch
 //
 //  Created by Mubarak Sadoon on 2018-06-05.
@@ -9,10 +9,10 @@
 import UIKit
 import FLAnimatedImage
 
-class GifCollectionViewCell: UICollectionViewCell {
+class GSGifCollectionViewCell: UICollectionViewCell {
  
     @IBOutlet weak var containerView: UIView!
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageView: FLAnimatedImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

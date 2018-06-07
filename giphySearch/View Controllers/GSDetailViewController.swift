@@ -7,16 +7,17 @@
 //
 
 import UIKit
+import FLAnimatedImage
 
 class GSDetailViewController: UIViewController {
 
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageView: FLAnimatedImageView!
     @IBOutlet weak var webButton: UIButton!
     @IBOutlet weak var rankLabel: UILabel!
     @IBOutlet weak var rankUpButton: UIButton!
     @IBOutlet weak var rankDownButton: UIButton!
     
-    var mainGif:UIImage?
+    var mainGif:FLAnimatedImage?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +30,7 @@ class GSDetailViewController: UIViewController {
         self.navigationItem.rightBarButtonItem = closeNavigationButton
         
         if let foundMainImage = mainGif {
-            imageView.image = foundMainImage
+            imageView.animatedImage = foundMainImage
             rankUpButton.isEnabled = true
             rankDownButton.isEnabled = true
             webButton.isEnabled = true

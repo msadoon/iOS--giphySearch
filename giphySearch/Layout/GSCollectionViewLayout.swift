@@ -21,7 +21,7 @@ class GSCollectionViewLayout: UICollectionViewLayout {
     
     internal var cache = [UICollectionViewLayoutAttributes]()
     
-    fileprivate var contentHeight: CGFloat = 0
+    fileprivate var contentHeight: CGFloat = 0.0
     
     fileprivate var contentWidth: CGFloat {
         guard let collectionView = collectionView else {

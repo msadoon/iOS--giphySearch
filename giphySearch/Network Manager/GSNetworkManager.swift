@@ -14,9 +14,9 @@ enum GiphyAPI:String {
     case searchTermBaseURL = "https://api.giphy.com/v1/gifs/search?api_key=98bt0IFeHjWUyPLhaxO8gI4G5LptY6fV&limit=20&offset=0&rating=G&lang=en&q="
 }
 
-public class NetworkManager {
+public class GSNetworkManager {
     
-    public static func getGiphs(searchTerm:String, completion: @escaping (_ status: Bool, _ records:[UIImage])->()) {
+    static func getGiphs(searchTerm:String, completion: @escaping (_ status: Bool, _ records:[GSGif])->()) {
         
         guard let urlForSearch:URL = URL(string: GiphyAPI.searchTermBaseURL.rawValue + searchTerm) else {
             completion(false, [])
@@ -37,15 +37,62 @@ public class NetworkManager {
             }
             
             if let mimeType = httpResponse.mimeType, mimeType == "application/json",
-               let data = data,
-               let string = String(data: data, encoding: .utf8) {
+               let data = data {
                     //parse data in model
-                    //print(string)
                 
-                //var sendBackRecords:[UIImage] = []
-
+                guard let jsonData:[String:AnyObject] = try? JSONSerialization.jsonObject(with: data, options: [.mutableContainers]) as! [String : AnyObject],
+                      let completeDataDictionary:[[String:AnyObject]] = jsonData["data"] as? [[String:AnyObject]] else {
+                    completion(false, [])
+                    return
+                }
                 
-                    //completion(true, sendBackRecords)
+                var allRecords:[GSGif] = []
+                
+                for dictionary in completeDataDictionary {
+                    
+                    if let foundGiphyObjectID:String = dictionary["id"] as? String,
+                        let foundGiphyObjectTitle:String = dictionary["title"] as? String,
+                        let foundGiphyObjectAllImages:[String:[String:AnyObject]] = dictionary["images"] as? [String:[String:AnyObject]],
+                        let foundGiphyObjectDownsized:[String:AnyObject] = foundGiphyObjectAllImages["downsized"],
+                        let foundGiphyObjectDownsizeURL:String = foundGiphyObjectDownsized["url"] as? String,
+                        let giphyObjectDownsizedURL:URL = URL(string: foundGiphyObjectDownsizeURL)
+                    {
+                        
+                        let newGSGifObject:GSGif = GSGif(id: foundGiphyObjectID, name: foundGiphyObjectTitle, url: giphyObjectDownsizedURL)
+                        allRecords.append(newGSGifObject)
+                        
+                    }
+                    
+                }
+                
+                completion(true, allRecords)
+                return
+            }
+        }
+        
+        task.resume()
+        
+    }
+    
+    static func downloadImageData(url: URL, completion: @escaping (_ status: Bool, _ dataForImage:Data?) -> ()) {
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            
+            if error != nil {
+                completion(false, nil)
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                (200...299).contains(httpResponse.statusCode) else {
+                    completion(false, nil)
+                    return
+            }
+            
+            if let mimeType = httpResponse.mimeType, mimeType == "image/gif",
+                let data = data {
+                
+                completion(true, data)
                 return
             }
         }
@@ -70,7 +117,7 @@ public class NetworkManager {
 //        if finished {
 //            //                if (cacheType == .none || cacheType == .disk) {
 //            DispatchQueue.main.async {
-//                if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GifCollectionViewCell
+//                if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell
 //                {
 //                    DispatchQueue.global(qos: .background).async {
 //                        if let imageDataFound = image?.sd_imageData(),
@@ -85,7 +132,7 @@ public class NetworkManager {
 //            }
 //            //                } else {
 //            //                    DispatchQueue.main.async {
-//            //                        if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GifCollectionViewCell,
+//            //                        if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell,
 //            //                            let animatedImage:FLAnimatedImage = FLAnimatedImage {
 //            //                            cellStillVisible.imageView.animatedImage = animatedImage
 //            //                            cellStillVisible.imageView.setNeedsDisplay()
@@ -96,7 +143,7 @@ public class NetworkManager {
 //        
 //    })
 //    //        DispatchQueue.main.async {
-//    //            if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GifCollectionViewCell {
+//    //            if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell {
 //    //                cellStillVisible.imageView.sd_setImage(with: forURL, placeholderImage: UIImage(named:"placeholder"), options: .continueInBackground, completed: { (image, error, cacheType, imageURL) in
 //    //                    if image != nil {
 //    //                        cellStillVisible.setNeedsLayout()

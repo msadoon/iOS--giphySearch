@@ -1,5 +1,5 @@
 //
-//  GCTransitionCustomAnimator.swift
+//  GSTransitionCustomAnimator.swift
 //  giphySearch
 //
 //  Created by Mubarak Sadoon on 2018-06-06.
@@ -10,7 +10,7 @@
 
 import UIKit
 
-class GCTransitionCustomAnimator:NSObject, UIViewControllerAnimatedTransitioning {
+class GSTransitionCustomAnimator:NSObject, UIViewControllerAnimatedTransitioning {
     
     private let transitionType:UINavigationControllerOperation
     private let transitionDuration:TimeInterval
