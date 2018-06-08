@@ -6,7 +6,7 @@ target 'giphySearch' do
   use_frameworks!
 
   # Pods for giphySearch
-  pod 'FLAnimatedImage', '~> 1.0'
+  pod 'FLAnimatedImage', :git => 'https://github.com/msadoon/FLAnimatedImage.git', :commit=> 'd1ea3322093ec9878fbfe3b8816b3a51c6fda4e2'
 
   target 'giphySearchTests' do
     inherit! :search_paths

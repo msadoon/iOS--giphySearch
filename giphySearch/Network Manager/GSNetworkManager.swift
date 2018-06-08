@@ -16,7 +16,9 @@ enum GiphyAPI:String {
 
 public class GSNetworkManager {
     
-    static func getGiphs(searchTerm:String, completion: @escaping (_ status: Bool, _ records:[GSGif])->()) {
+    static var currentSearchTerm:String = ""
+    
+    static func getGiphs(searchTerm:String, completion: @escaping (_ status: Bool, _ records:[[String:AnyObject]])->()) {
         
         guard let urlForSearch:URL = URL(string: GiphyAPI.searchTermBaseURL.rawValue + searchTerm) else {
             completion(false, [])
@@ -46,20 +48,20 @@ public class GSNetworkManager {
                     return
                 }
                 
-                var allRecords:[GSGif] = []
+                var allRecords:[[String:AnyObject]] = []
+                currentSearchTerm = searchTerm
                 
                 for dictionary in completeDataDictionary {
                     
-                    if let foundGiphyObjectID:String = dictionary["id"] as? String,
-                        let foundGiphyObjectTitle:String = dictionary["title"] as? String,
+                    if let foundGiphyObjectID:AnyObject = dictionary["id"],
+                        let foundGiphyObjectTitle:AnyObject = dictionary["title"],
                         let foundGiphyObjectAllImages:[String:[String:AnyObject]] = dictionary["images"] as? [String:[String:AnyObject]],
                         let foundGiphyObjectDownsized:[String:AnyObject] = foundGiphyObjectAllImages["downsized"],
                         let foundGiphyObjectDownsizeURL:String = foundGiphyObjectDownsized["url"] as? String,
                         let giphyObjectDownsizedURL:URL = URL(string: foundGiphyObjectDownsizeURL)
                     {
                         
-                        let newGSGifObject:GSGif = GSGif(id: foundGiphyObjectID, name: foundGiphyObjectTitle, url: giphyObjectDownsizedURL)
-                        allRecords.append(newGSGifObject)
+                        allRecords.append(["id": foundGiphyObjectID, "name": foundGiphyObjectTitle, "url" : giphyObjectDownsizedURL as AnyObject])
                         
                     }
                     
@@ -102,66 +104,3 @@ public class GSNetworkManager {
     }
     
 }
-
-//SDWebImageCodersManager.sharedInstance().addCoder(SDWebImageGIFCoder.shared())
-////        SDWebImageDownloader.shared().shouldDecompressImages
-//
-////MARK: Helper functions:
-//private func getImageDataAndUpdateCell(forURL: URL, indexPath:IndexPath) {
-//    
-//    //        SDWebImageScaleDownLargeImages = 1 << 12,
-//    //        SDWebImageQueryDataWhenInMemory = 1 << 13,
-//    //        SDWebImageQueryDiskSync = 1 << 14,
-//    SDWebImageManager.shared().loadImage(with: forURL, options: [.queryDataWhenInMemory, .scaleDownLargeImages, .continueInBackground], progress: nil, completed: {
-//        (image : UIImage?, imageData: Data?, error : Error?, cacheType : SDImageCacheType, finished : Bool, url : URL?) in
-//        if finished {
-//            //                if (cacheType == .none || cacheType == .disk) {
-//            DispatchQueue.main.async {
-//                if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell
-//                {
-//                    DispatchQueue.global(qos: .background).async {
-//                        if let imageDataFound = image?.sd_imageData(),
-//                            let animatedImage:FLAnimatedImage = FLAnimatedImage(gifData: imageDataFound) {
-//                            DispatchQueue.main.async {
-//                                cellStillVisible.imageView.animatedImage = animatedImage
-//                                cellStillVisible.imageView.setNeedsDisplay()
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            //                } else {
-//            //                    DispatchQueue.main.async {
-//            //                        if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell,
-//            //                            let animatedImage:FLAnimatedImage = FLAnimatedImage {
-//            //                            cellStillVisible.imageView.animatedImage = animatedImage
-//            //                            cellStillVisible.imageView.setNeedsDisplay()
-//            //                        }
-//            //                    }
-//            //                }
-//        }
-//        
-//    })
-//    //        DispatchQueue.main.async {
-//    //            if let cellStillVisible = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell {
-//    //                cellStillVisible.imageView.sd_setImage(with: forURL, placeholderImage: UIImage(named:"placeholder"), options: .continueInBackground, completed: { (image, error, cacheType, imageURL) in
-//    //                    if image != nil {
-//    //                        cellStillVisible.setNeedsLayout()
-//    //                        print(imageURL)
-//    //                    } else {
-//    //                        print("not found")
-//    //                    }
-//    //                })
-//    //            }
-//    //
-//}
-//
-//
-//print(indexPath)
-//cell.imageView.animatedImage = nil
-//cell.imageView.sd_imageTransition = .fade
-////call an async block to get the image data
-//
-//if let createdURLForString = URL(string: self.gifs[indexPath.row].urlString) {
-//    getImageDataAndUpdateCell(forURL: createdURLForString, indexPath: indexPath)
-//}

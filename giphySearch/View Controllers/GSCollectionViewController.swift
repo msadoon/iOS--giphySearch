@@ -9,11 +9,33 @@
 //Custom bar button credit: https://stackoverflow.com/questions/5761183/change-position-of-uibarbuttonitem-in-uinavigationbar
 
 import UIKit
+import CoreData
 import FLAnimatedImage
 
 class GSCollectionViewController: UICollectionViewController {
     
     var selectedIndexPath:IndexPath? = nil
+    
+    let searchTerm = "Cats"
+    
+    lazy var fetchedResultsController: NSFetchedResultsController<GSGif> = {
+        let fetchRequest: NSFetchRequest<GSGif> = GSGif.fetchRequest()
+        let rankSort = NSSortDescriptor(key: #keyPath(GSGif.rank), ascending: true)
+        let predicate = NSPredicate(format: "%K == %@", #keyPath(GSGif.searchTerm), searchTerm)
+        fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = [rankSort]
+        fetchRequest.fetchBatchSize = 20
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: GSDataManager.sharedInstance.managedContext,
+            sectionNameKeyPath: nil,
+            cacheName: "gifs"
+        )
+        
+        //fetchedResultsController.delegate = self;
+        
+        return fetchedResultsController
+    }()
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -22,18 +44,10 @@ class GSCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        GSDataManager.sharedInstance.getAllGiphJSONData(searchTerm: "Cats")
-        
+        GSDataManager.sharedInstance.getAllGiphJSONData(searchTerm: searchTerm)
         self.navigationController?.delegate = self
-        
-        if let layout = collectionView?.collectionViewLayout as? GSCollectionViewLayout {
-            layout.delegate = self
-        }
-        
-        self.collectionView?.reloadData()
-        
-        collectionView?.backgroundColor = .clear
-        collectionView?.contentInset = UIEdgeInsets(top: 23, left: 16, bottom: 10, right: 16)
+        self.setupCollectionViewAndLayout()
+    
         
     }
     
@@ -49,12 +63,27 @@ class GSCollectionViewController: UICollectionViewController {
     
     //MARK: Helper Methods
     
+    private func setupCollectionViewAndLayout() {
+        if let layout = collectionView?.collectionViewLayout as? GSCollectionViewLayout {
+            layout.delegate = self
+        }
+        collectionView?.backgroundColor = .clear
+        collectionView?.contentInset = UIEdgeInsets(top: 23, left: 16, bottom: 10, right: 16)
+    }
+    
     //MARK: Notification Methods
     @objc func updateCollectionView() {
-        DispatchQueue.main.async {
-            self.collectionView?.collectionViewLayout.invalidateLayout()
-            self.collectionView?.reloadData()
+        
+        do {
+            try fetchedResultsController.performFetch()
+            DispatchQueue.main.async {
+                self.collectionView?.collectionViewLayout.invalidateLayout()
+                self.collectionView?.reloadData()
+            }
+        } catch let error as NSError {
+            print("Oops! Error while fetching: " + error.description)
         }
+        
     }
     
 }
@@ -76,13 +105,17 @@ extension GSCollectionViewController: UINavigationControllerDelegate {
 extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return GSDataManager.sharedInstance.allGifsForCurrentSearchTerm().count
+        guard let sectionInfo = fetchedResultsController.sections?[section] else {
+            return 0
+        }
+        
+        return sectionInfo.numberOfObjects
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GSGifCollectionViewCell", for: indexPath) as! GSGifCollectionViewCell
         
-        cell.imageView.animatedImage = GSDataManager.sharedInstance.allGifsForCurrentSearchTerm()[indexPath.row].image
+        cell.imageView.animatedImage = fetchedResultsController.object(at: indexPath).image
         
         return cell
     }
@@ -109,7 +142,7 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
         }
         
         selectedIndexPath = indexPath
-        gifDetailVC.mainGif = GSDataManager.sharedInstance.allGifsForCurrentSearchTerm()[indexPath.row].image
+        gifDetailVC.mainGif = fetchedResultsController.object(at: indexPath).image
         self.navigationController?.pushViewController(gifDetailVC, animated: true)
     }
     
@@ -119,7 +152,7 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
 
 extension GSCollectionViewController: GSCollectionViewLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, heightForImageAtIndexPath indexPath: IndexPath) -> CGFloat {
-        if let foundImage:FLAnimatedImage = GSDataManager.sharedInstance.allGifsForCurrentSearchTerm()[indexPath.item].image {
+        if let foundImage:FLAnimatedImage = fetchedResultsController.object(at: indexPath).image {
             return foundImage.size.height
         } else {
             return 0

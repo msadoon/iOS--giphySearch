@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "FLAnimatedImage+NSCoding.h"
 #import "FLAnimatedImage.h"
 #import "FLAnimatedImageView.h"
 
