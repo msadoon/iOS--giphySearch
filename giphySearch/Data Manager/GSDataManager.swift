@@ -24,9 +24,9 @@ class GSDataManager {
         self.managedContext = coreDataStack.newBackgroundContext
     }
     
-    //MARK: Core Data
+    //MARK: Core Data Operations
     
-    func saveNewGifs() {
+    func addNewGifs() {
         
         for gif in gifs {
             
@@ -54,23 +54,68 @@ class GSDataManager {
         
     }
     
-    //MARK: Network
+    func updateGifRank(gif:GSGif, newRank: Int) {
+
+        gif.rank = Int32(newRank)
+        
+        if self.managedContext.hasChanges {
+            self.coreDataStack.saveContext(context: managedContext)
+        }
+
+        NotificationCenter.default.post(name: .gifUpdatedRank, object: nil)
+
+    }
+
+    func deleteAllGifs(searchTerm: String) {
+        
+        let allGifsForSearchTerm = findAllGifs(searchTerm: searchTerm)
+        
+        for gif in allGifsForSearchTerm {
+            self.managedContext.delete(gif)
+        }
+        
+        if self.managedContext.hasChanges {
+            self.coreDataStack.saveContext(context: managedContext)
+        }
+        
+        NotificationCenter.default.post(name: .deletedAllGifsForSearchTerm, object: nil)
+    }
     
+    func findAllGifs(searchTerm: String) -> [GSGif] {
+        let gsgifFetchRequest:NSFetchRequest<GSGif> = GSGif.fetchRequest()
+        gsgifFetchRequest.predicate = NSPredicate(format: "searchTerm == %@", searchTerm)
+        
+        var allResults:[GSGif] = []
+        
+        do {
+            allResults = try self.managedContext.fetch(gsgifFetchRequest)
+            if allResults.count > 0 {
+                return allResults
+            }
+        } catch {
+            return allResults
+        }
+        
+        return allResults
+    }
+    
+    //MARK: Network
+
     func getAllGiphJSONData(searchTerm:String) {
         GSNetworkManager.getGiphs(searchTerm:searchTerm, completion: { (status, records) in
-            
+
             if status {
                 self.updateModelDataWith(newGifs: records)
                 self.downloadAllImageData()
             }
-            
+
         })
     }
-    
+
     private func updateModelDataWith(newGifs:[[String:AnyObject]]) {
         gifs.append(contentsOf: newGifs)
     }
-    
+
     private func downloadAllImageData() {
         
         var imagesDownloaded = 0
@@ -88,10 +133,10 @@ class GSDataManager {
                         let animatedImage:FLAnimatedImage = FLAnimatedImage(gifData: dataForImage)
                         self.gifs[index]["animatedImage"] = animatedImage
                         imagesDownloaded += 1
-                        if (imagesDownloaded == (self.gifs.count)) { self.saveNewGifs() }
+                        if (imagesDownloaded == (self.gifs.count)) { self.addNewGifs() }
                     } else {
                         imagesDownloaded += 1
-                        if (imagesDownloaded == (self.gifs.count)) { self.saveNewGifs() }
+                        if (imagesDownloaded == (self.gifs.count)) { self.addNewGifs() }
                     }
                 }
             })

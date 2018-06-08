@@ -87,7 +87,7 @@ class GSTransitionCustomAnimator:NSObject, UIViewControllerAnimatedTransitioning
         DispatchQueue.main.asyncAfter(deadline: when) {
             screenshotToView.isHidden = false;
         }
-        
+        screenshotFromView.alpha = 0.0
         UIView.animate(withDuration: transitionDuration, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.0, options: [], animations: {
             
             screenshotFromView.alpha = 0.0
