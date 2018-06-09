@@ -21,4 +21,11 @@ class GSGifCollectionViewCell: UICollectionViewCell {
         //containerView.layer.masksToBounds = true
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        rankLabel.text = "0"
+        imageView.image = nil
+    }
+
 }

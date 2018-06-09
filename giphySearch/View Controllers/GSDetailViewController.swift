@@ -9,14 +9,6 @@
 import UIKit
 import FLAnimatedImage
 
-enum HighlighterColors {
-    static let yellow = UIColor(red: 241.0/255.0, green: 244.0/255.0, blue: 20.0/255.0, alpha: 1.0)
-    static let green = UIColor(red: 117.0/255.0, green: 249.0/255.0, blue: 75.0/255.0, alpha: 1.0)
-    static let orange = UIColor(red: 251.0/255.0, green: 78.0/255.0, blue: 9.0/255.0, alpha: 1.0)
-    static let pink = UIColor(red: 251.0/255.0, green: 0.0/255.0, blue: 136.0/255.0, alpha: 1.0)
-    static let purple = UIColor(red: 89.0/255.0, green: 0.0/255.0, blue: 198.0/255.0, alpha: 1.0)
-}
-
 protocol UpdateCollectionViewDelegate:class {
     func closeDetailViewAfterCollectionViewUpdate()
 }
@@ -33,6 +25,7 @@ class GSDetailViewController: UIViewController {
     var detailGif:GSGif?
     private var websiteURL:URL?
     private var rankBeforeSave:Int = 0
+    var colorForDetailPage:UIColor?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,29 +50,16 @@ class GSDetailViewController: UIViewController {
     //MARK: - Helper
     
     private func setupBackground() {
-        let randomColorNum = arc4random_uniform(5) + 1
-        
-        switch randomColorNum {
-        case 0: self.view.backgroundColor = HighlighterColors.yellow
-                self.imageView.backgroundColor = HighlighterColors.yellow
-                self.rankButtonContainer.backgroundColor = HighlighterColors.yellow
-        case 1: self.view.backgroundColor = HighlighterColors.green
-                self.imageView.backgroundColor = HighlighterColors.green
-                self.rankButtonContainer.backgroundColor = HighlighterColors.green
-        case 2: self.view.backgroundColor = HighlighterColors.orange
-                self.imageView.backgroundColor = HighlighterColors.orange
-                self.rankButtonContainer.backgroundColor = HighlighterColors.orange
-        case 3: self.view.backgroundColor = HighlighterColors.pink
-                self.imageView.backgroundColor = HighlighterColors.pink
-                self.rankButtonContainer.backgroundColor = HighlighterColors.pink
-        default: self.view.backgroundColor = HighlighterColors.purple
-                self.imageView.backgroundColor = HighlighterColors.purple
-                self.rankButtonContainer.backgroundColor = HighlighterColors.purple
+        if let foundColorForDetailPage:UIColor = colorForDetailPage {
+            self.view.backgroundColor = foundColorForDetailPage
+            self.imageView.backgroundColor = foundColorForDetailPage
+            self.rankButtonContainer.backgroundColor = foundColorForDetailPage
         }
     }
     
     private func setupGifDetails() {
-        if let foundMainImage = detailGif?.image,
+        if let foundMainImageData:Data = detailGif?.image as Data?,
+            let foundMainImage:FLAnimatedImage = FLAnimatedImage(gifData: foundMainImageData),
            let foundTitle = detailGif?.name,
            let foundRank = detailGif?.rank,
            let foundWebsite = detailGif?.url {

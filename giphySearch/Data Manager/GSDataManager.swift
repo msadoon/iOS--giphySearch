@@ -18,6 +18,8 @@ class GSDataManager {
     static let sharedInstance:GSDataManager = GSDataManager()
     
     private var gifs:[[String:AnyObject]] = []
+    private var gettingACurrentBatchOfGifs:Bool = false
+    private var currentNumberOfGifsDownloadedForSearchTerm:Int = 0
     
     public init() {
         self.coreDataStack = GSCoreDataStack.sharedInstance
@@ -28,21 +30,40 @@ class GSDataManager {
     
     func addNewGifs() {
         
-        for gif in gifs {
+        var returnArrayGifObjects:[String:[[Int:FLAnimatedImage]]] = ["newlyCreatedFLAnimatedImages":[[:]]]
+        
+        for index in 0..<gifs.count {
             
-            if let foundGifName:String = gif["name"] as? String,
-                let foundGifIDString:String = gif["id"] as? String,
-                let foundGifImage:FLAnimatedImage = gif["animatedImage"] as? FLAnimatedImage,
-                let foundGifURL:URL = gif["url"] as? URL {
-                let newGif:GSGif = GSGif(context: self.managedContext)
+            if let foundGifName:String = gifs[index]["name"] as? String,
+                let foundGifIDString:String = gifs[index]["id"] as? String,
+                let foundGifImage:NSData = gifs[index]["imageData"] as? NSData,
+                let foundGifAnimatedImage:FLAnimatedImage = gifs[index]["animatedImage"] as? FLAnimatedImage,
+                let foundGifURL:URL = gifs[index]["url"] as? URL,
+                let foundGifHeight:String = gifs[index]["height"] as? String,
+                let foundGifWidth:String = gifs[index]["width"] as? String,
+                let foundGifHeightInt:Int = Int(foundGifHeight),
+                let foundGifWidthInt:Int = Int(foundGifWidth){
+                let entity = NSEntityDescription.entity(
+                    forEntityName: "GSGif",
+                    in: managedContext)!
+                let newGif = GSGif(entity: entity,
+                                    insertInto: managedContext)
+                
                 newGif.name = foundGifName
                 newGif.id = foundGifIDString
                 newGif.image = foundGifImage
                 newGif.url = foundGifURL
+                newGif.height = Int32(foundGifHeightInt)
+                newGif.width = Int32(foundGifWidthInt)
                 newGif.searchTerm = GSNetworkManager.currentSearchTerm
+                
+                returnArrayGifObjects["newlyCreatedFLAnimatedImages"]?.append([index + currentNumberOfGifsDownloadedForSearchTerm: foundGifAnimatedImage])
+                
             }
             
         }
+        
+        currentNumberOfGifsDownloadedForSearchTerm += gifs.count
         
         gifs = []
         
@@ -50,7 +71,8 @@ class GSDataManager {
             self.coreDataStack.saveContext(context: managedContext)
         }
         
-        NotificationCenter.default.post(name: .newGifsDownloaded, object: nil)
+        self.gettingACurrentBatchOfGifs = false
+        NotificationCenter.default.post(name: .newGifsDownloaded, object: returnArrayGifObjects)
         
     }
     
@@ -101,15 +123,23 @@ class GSDataManager {
     
     //MARK: Network
 
-    func getAllGiphJSONData(searchTerm:String) {
-        GSNetworkManager.getGiphs(searchTerm:searchTerm, completion: { (status, records) in
-
-            if status {
-                self.updateModelDataWith(newGifs: records)
-                self.downloadAllImageData()
-            }
-
-        })
+    func getAllGiphJSONData(searchTerm:String) -> Bool {
+        
+        if !self.gettingACurrentBatchOfGifs {
+            self.gettingACurrentBatchOfGifs = true
+            
+            GSNetworkManager.getGiphs(searchTerm:searchTerm, completion: { (status, records) in
+                
+                if status {
+                    self.updateModelDataWith(newGifs: records)
+                    self.downloadAllImageData()
+                }
+                
+            })
+            return true
+        }
+        
+        return false
     }
 
     private func updateModelDataWith(newGifs:[[String:AnyObject]]) {
@@ -118,7 +148,10 @@ class GSDataManager {
 
     private func downloadAllImageData() {
         
-        var imagesDownloaded = 0
+        var operationsCompleted:Int = 0
+        
+        let queue:OperationQueue = OperationQueue()
+        queue.maxConcurrentOperationCount = 4
         
         for index in 0..<gifs.count {
             
@@ -126,20 +159,28 @@ class GSDataManager {
                 continue
             }
             
-            GSNetworkManager.downloadImageData(url: url, completion: {
-                (status, dataForImage) in
-                if index < self.gifs.count {
-                    if status {
-                        let animatedImage:FLAnimatedImage = FLAnimatedImage(gifData: dataForImage)
-                        self.gifs[index]["animatedImage"] = animatedImage
-                        imagesDownloaded += 1
-                        if (imagesDownloaded == (self.gifs.count)) { self.addNewGifs() }
-                    } else {
-                        imagesDownloaded += 1
-                        if (imagesDownloaded == (self.gifs.count)) { self.addNewGifs() }
+            let operation:BlockOperation = BlockOperation( block: {
+                GSNetworkManager.downloadImageData(url: url, completion: {
+                    (status, dataForImage) in
+                    if index < self.gifs.count {
+                        if status {
+                            let animatedImage:FLAnimatedImage = FLAnimatedImage(gifData: dataForImage)
+                            if let foundData:NSData = dataForImage as NSData? {
+                                self.gifs[index]["imageData"] = foundData
+                                self.gifs[index]["animatedImage"] = animatedImage
+                            }
+                        } else {
+                            print("fail")
+                        }
+                        operationsCompleted += 1
+                        if operationsCompleted == self.gifs.count {
+                            self.addNewGifs()
+                        }
                     }
-                }
+                })
             })
+            
+            queue.addOperation(operation)
             
         }
         

@@ -20,13 +20,13 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="FHZ-19-R0p">
                             <size key="itemSize" width="50" height="50"/>
-                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="headerReferenceSize" width="50" height="50"/>
+                            <size key="footerReferenceSize" width="50" height="50"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" reuseIdentifier="GSGifCollectionViewCell" id="Chb-3f-h9Z" customClass="GSGifCollectionViewCell" customModule="giphySearch" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="180" height="180"/>
+                                <rect key="frame" x="0.0" y="50" width="180" height="180"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
                                     <rect key="frame" x="0.0" y="0.0" width="180" height="180"/>
@@ -88,6 +88,63 @@
                                 </connections>
                             </collectionViewCell>
                         </cells>
+                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="SearchBarInHeader" id="uZM-GK-7Na" customClass="GSSearchCollectionReusableView" customModule="giphySearch" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <searchBar contentMode="redraw" fixedFrame="YES" barStyle="black" searchBarStyle="minimal" placeholder="Search for Gifs!" translatesAutoresizingMaskIntoConstraints="NO" id="rg3-Ga-eG3">
+                                    <rect key="frame" x="0.0" y="-3" width="375" height="56"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="barTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <textInputTraits key="textInputTraits"/>
+                                    <connections>
+                                        <outlet property="delegate" destination="BYZ-38-t0r" id="zCv-EQ-U9Q"/>
+                                    </connections>
+                                </searchBar>
+                            </subviews>
+                            <connections>
+                                <outlet property="searchBar" destination="rg3-Ga-eG3" id="HaY-31-dPN"/>
+                            </connections>
+                        </collectionReusableView>
+                        <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="LoadingViewInFooter" id="gIl-rd-Il4" customClass="GSLoadingCollectionReusableView" customModule="giphySearch" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="230" width="375" height="50"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WhI-hK-aqj">
+                                    <rect key="frame" x="20" y="5" width="335" height="40"/>
+                                    <color key="backgroundColor" red="0.57919406890000003" green="0.1280144453" blue="0.57268613580000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="20"/>
+                                    <state key="normal" title="I Want More GIFS!">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="loadMoreGIFS:" destination="gIl-rd-Il4" eventType="touchUpInside" id="7Zh-73-EZY"/>
+                                    </connections>
+                                </button>
+                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="giphySearchAppIconLoading" translatesAutoresizingMaskIntoConstraints="NO" id="IDK-IB-eX7">
+                                    <rect key="frame" x="168.5" y="3" width="38" height="44"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="44" id="aFk-ck-09r"/>
+                                        <constraint firstAttribute="width" constant="38" id="sZa-7w-3BM"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="IDK-IB-eX7" firstAttribute="centerX" secondItem="gIl-rd-Il4" secondAttribute="centerX" id="0NK-73-PNF"/>
+                                <constraint firstAttribute="trailing" secondItem="WhI-hK-aqj" secondAttribute="trailing" constant="20" id="4IA-OV-diW"/>
+                                <constraint firstItem="WhI-hK-aqj" firstAttribute="leading" secondItem="gIl-rd-Il4" secondAttribute="leading" constant="20" id="HbP-1I-SoF"/>
+                                <constraint firstItem="IDK-IB-eX7" firstAttribute="centerY" secondItem="gIl-rd-Il4" secondAttribute="centerY" id="Snm-L0-Vid"/>
+                                <constraint firstAttribute="bottom" secondItem="WhI-hK-aqj" secondAttribute="bottom" constant="5" id="zHr-L0-ZXp"/>
+                                <constraint firstItem="WhI-hK-aqj" firstAttribute="top" secondItem="gIl-rd-Il4" secondAttribute="top" constant="5" id="zqg-PF-dkp"/>
+                            </constraints>
+                            <connections>
+                                <outlet property="loadingButton" destination="WhI-hK-aqj" id="u3R-jf-4Y3"/>
+                                <outlet property="loadingImageView" destination="IDK-IB-eX7" id="rSb-nx-5Z5"/>
+                            </connections>
+                        </collectionReusableView>
                         <connections>
                             <outlet property="dataSource" destination="BYZ-38-t0r" id="evI-Rh-wyg"/>
                             <outlet property="delegate" destination="BYZ-38-t0r" id="eA4-m7-3s6"/>
@@ -233,6 +290,7 @@
     </scenes>
     <resources>
         <image name="dislike" width="64" height="64"/>
+        <image name="giphySearchAppIconLoading" width="69" height="79"/>
         <image name="globe" width="64" height="64"/>
         <image name="like" width="64" height="64"/>
     </resources>
