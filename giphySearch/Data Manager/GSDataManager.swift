@@ -20,17 +20,24 @@ class GSDataManager {
     private var gifs:[[String:AnyObject]] = []
     private var gettingACurrentBatchOfGifs:Bool = false
     private var currentNumberOfGifsDownloadedForSearchTerm:Int = 0
+    private let queue:OperationQueue = OperationQueue()
+    
+    var getCurrentLimit:Int = {
+        return GSNetworkManager.currentLimit
+    }()
     
     public init() {
         self.coreDataStack = GSCoreDataStack.sharedInstance
         self.managedContext = coreDataStack.newBackgroundContext
+        queue.maxConcurrentOperationCount = 4
+        
     }
     
     //MARK: Core Data Operations
     
     func addNewGifs() {
         
-        var returnArrayGifObjects:[String:[[Int:FLAnimatedImage]]] = ["newlyCreatedFLAnimatedImages":[[:]]]
+        var newGifObjects:[Int:FLAnimatedImage] = [:]
         
         for index in 0..<gifs.count {
             
@@ -57,7 +64,7 @@ class GSDataManager {
                 newGif.width = Int32(foundGifWidthInt)
                 newGif.searchTerm = GSNetworkManager.currentSearchTerm
                 
-                returnArrayGifObjects["newlyCreatedFLAnimatedImages"]?.append([index + currentNumberOfGifsDownloadedForSearchTerm: foundGifAnimatedImage])
+                newGifObjects[index + currentNumberOfGifsDownloadedForSearchTerm] = foundGifAnimatedImage
                 
             }
             
@@ -72,7 +79,7 @@ class GSDataManager {
         }
         
         self.gettingACurrentBatchOfGifs = false
-        NotificationCenter.default.post(name: .newGifsDownloaded, object: returnArrayGifObjects)
+        NotificationCenter.default.post(name: .newGifsDownloaded, object: newGifObjects)
         
     }
     
@@ -141,17 +148,10 @@ class GSDataManager {
         
         return false
     }
-
-    private func updateModelDataWith(newGifs:[[String:AnyObject]]) {
-        gifs.append(contentsOf: newGifs)
-    }
-
+    
     private func downloadAllImageData() {
         
         var operationsCompleted:Int = 0
-        
-        let queue:OperationQueue = OperationQueue()
-        queue.maxConcurrentOperationCount = 4
         
         for index in 0..<gifs.count {
             
@@ -164,7 +164,7 @@ class GSDataManager {
                     (status, dataForImage) in
                     if index < self.gifs.count {
                         if status {
-                            let animatedImage:FLAnimatedImage = FLAnimatedImage(gifData: dataForImage)
+                            let animatedImage:FLAnimatedImage = FLAnimatedImage(animatedGIFData: dataForImage, optimalFrameCacheSize: 3, predrawingEnabled: false)
                             if let foundData:NSData = dataForImage as NSData? {
                                 self.gifs[index]["imageData"] = foundData
                                 self.gifs[index]["animatedImage"] = animatedImage
@@ -184,6 +184,41 @@ class GSDataManager {
             
         }
         
+    }
+    
+    //MARK: Helper Methods
+    
+    func convertImagesForThisData(allImageData:[Int: Data]) {
+        
+        var operationsCompleted:Int = 0
+        
+        var returnableImages:[Int:FLAnimatedImage] = [:]
+        
+        for key in allImageData.keys {
+            
+            let operation:BlockOperation = BlockOperation( block: {
+                
+                DispatchQueue.global(qos:.userInitiated).async {
+                    if let foundFLAnimatedImage:FLAnimatedImage = FLAnimatedImage(animatedGIFData: allImageData[key], optimalFrameCacheSize: 3, predrawingEnabled: false) {
+                        returnableImages[key] = foundFLAnimatedImage
+                    }
+                    
+                    operationsCompleted += 1
+                    if operationsCompleted == allImageData.count {
+                        NotificationCenter.default.post(name: .convertedAllImages, object: returnableImages)
+                    }
+                }
+                
+
+            })
+            
+            queue.addOperation(operation)
+            
+        }
+    }
+    
+    private func updateModelDataWith(newGifs:[[String:AnyObject]]) {
+        gifs.append(contentsOf: newGifs)
     }
     
 }

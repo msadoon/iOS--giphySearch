@@ -30,6 +30,12 @@ class GSCollectionViewController: UICollectionViewController {
     weak var delegate:UpdateCollectionViewDelegate?
     let searchTerm = "Cats"
     private var stillLoading:Bool = false
+    private var localDictOfAnimatedImages:[Int:(Date, FLAnimatedImage?)] = [:]
+    private var numberOfBackgroundThreadsCreated = 0
+    private var lastSetOfVisibleIndexPaths:[Int] = []
+    private var dataToFLAnimatedImageConversionQueue:OperationQueue = OperationQueue()
+    private var updateFLAnimatedImagesReturnedFromDataManager: Bool = true
+    private var dictionaryOfIndexPathsWithoutFLAnimatedImages:[Int: Data] = [:]
     
     lazy var fetchedResultsController: NSFetchedResultsController<GSGif> = {
         let fetchRequest: NSFetchRequest<GSGif> = GSGif.fetchRequest()
@@ -64,12 +70,14 @@ class GSCollectionViewController: UICollectionViewController {
 
         self.navigationController?.delegate = self
         self.setupCollectionViewAndLayout()
+        self.setupOperationQueue()
     
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(self.onDidReceiveData(_:)), name: .newGifsDownloaded, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onDidReceiveDataForVisibleCells(_:)), name: .convertedAllImages, object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -78,6 +86,16 @@ class GSCollectionViewController: UICollectionViewController {
     }
     
     //MARK: Helper Methods
+    
+    private func ifCellStillVisibleUpdateWithAnimatedImage(indexPath:IndexPath, convertedImage: FLAnimatedImage) {
+        
+        if let value = self.collectionView?.indexPathsForVisibleItems.contains(indexPath), let cellForIndexPath:GSGifCollectionViewCell = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell {
+            if value {
+                cellForIndexPath.imageView.animatedImage = convertedImage
+                cellForIndexPath.setNeedsLayout()
+            }
+        }
+    }
     
     private func randomColor() -> UIColor {
         let randomColorNum = arc4random_uniform(5) + 1
@@ -120,8 +138,119 @@ class GSCollectionViewController: UICollectionViewController {
         
     }
     
+    private func removeOldestImagesFromLocalDictOfImages() {
+        //remove lowest 20 indices
+        let difference = (localDictOfAnimatedImages.keys.count - 20)
+        
+        //prune to keep dictionary small
+        let currentLimit = GSDataManager.sharedInstance.getCurrentLimit
+        if difference >= currentLimit {
+            self.sortLocalDictOfAnimatedImagesByOldestDate()
+            for index in 0..<difference {
+                localDictOfAnimatedImages[index] = nil
 
+            }
+        }
+    }
+    
+    private func sortLocalDictOfAnimatedImagesByOldestDate() {
+        
+        var arrayOfAllKeysDatesAndImages:[(Date, Int, FLAnimatedImage)] = []
+        
+        for key in localDictOfAnimatedImages.keys {
+            
+            if let foundDateAndImage:(Date, FLAnimatedImage) = localDictOfAnimatedImages[key] as? (Date, FLAnimatedImage) {
+                arrayOfAllKeysDatesAndImages.append((foundDateAndImage.0, key, foundDateAndImage.1))
+            }
+        }
+        
+        let sortedArrayOfKeysDatesAndImagesByDate = arrayOfAllKeysDatesAndImages.sorted(by: {$0.0 < $1.0})
+        
+        localDictOfAnimatedImages.removeAll()
+        
+        for value in sortedArrayOfKeysDatesAndImagesByDate {
+            localDictOfAnimatedImages[value.1] = (value.0, value.2)
+        }
+        
+    }
+    
+    private func addItemToLocalDictOfOfImages(newItem:[Int: FLAnimatedImage]) {
+        
+        removeOldestImagesFromLocalDictOfImages()
+        
+        if let foundKey = newItem.keys.first {
+            
+            localDictOfAnimatedImages[foundKey] = (Date(),newItem[foundKey])
+        }
+        
+    }
+    
+
+    private func addNewItemsToLocalDictOfImages(newImagesDict:[Int: FLAnimatedImage]) {
+        //For every new item downloaded I want to add it to the local dict by replacing the lowest index in that dict.
+        
+        removeOldestImagesFromLocalDictOfImages()
+        
+        for key in newImagesDict.keys {
+            
+            localDictOfAnimatedImages[key] = (Date(),newImagesDict[key])
+        }
+        
+    }
+    
+    private func setupOperationQueue() {
+        self.dataToFLAnimatedImageConversionQueue.maxConcurrentOperationCount = 3
+    }
+    
+    private func getNewFLAnimatedImagesForVisibleCells() {
+        
+        if let foundAllIndexPathsForVisibleCells = self.collectionView?.indexPathsForVisibleItems {
+            for indexPath in foundAllIndexPathsForVisibleCells {
+                
+                if !localDictOfAnimatedImages.keys.contains(indexPath.row) {
+                    let gifObject:GSGif = self.fetchedResultsController.object(at: indexPath)
+                    gifObject.managedObjectContext?.perform { //async will return at any time and in any order
+                        if let gifData:Data = gifObject.image as Data? {
+                            self.dictionaryOfIndexPathsWithoutFLAnimatedImages[indexPath.row] = gifData
+                        }
+                        
+                        if self.updateFLAnimatedImagesReturnedFromDataManager && (self.dictionaryOfIndexPathsWithoutFLAnimatedImages.keys.count == 10) {
+                            self.updateFLAnimatedImagesReturnedFromDataManager = false
+                                print("call made to get visible indexpath flanimatedimages. keys to get: ", self.dictionaryOfIndexPathsWithoutFLAnimatedImages.keys)
+                                
+                                GSDataManager.sharedInstance.convertImagesForThisData(allImageData:self.dictionaryOfIndexPathsWithoutFLAnimatedImages)
+                            
+                        }
+                    }
+                }
+                
+            }
+        }
+        
+    }
+    
     //MARK: Notification Methods
+    
+    @objc func onDidReceiveDataForVisibleCells(_ notification: NSNotification) {
+        
+        DispatchQueue.main.async {
+            self.updateFLAnimatedImagesReturnedFromDataManager = true
+            self.dictionaryOfIndexPathsWithoutFLAnimatedImages.removeAll()
+            print("RETURNED WITH ALL FLANIMATEDIMAGES!")
+            if let foundDict:[Int:FLAnimatedImage] = notification.object as? [Int:FLAnimatedImage] {
+                self.addNewItemsToLocalDictOfImages(newImagesDict:foundDict)
+                for key in foundDict.keys {
+                    if let foundImageFromLocalArray:FLAnimatedImage = self.localDictOfAnimatedImages[key]?.1 {
+                        self.ifCellStillVisibleUpdateWithAnimatedImage(indexPath:IndexPath(row: key, section: 0), convertedImage: foundImageFromLocalArray)
+                    }
+                }
+            }
+            
+            
+        }
+        
+    }
+    
     @objc func onDidReceiveData(_ notification: NSNotification) {
         
         GSDataManager.sharedInstance.coreDataStack.storeContainer.performBackgroundTask {
@@ -131,6 +260,10 @@ class GSCollectionViewController: UICollectionViewController {
                 try self.fetchedResultsController.performFetch()
                 
                 DispatchQueue.main.async {
+                    if let foundDict:[Int:FLAnimatedImage] = notification.object as? [Int:FLAnimatedImage] {
+                        self.addNewItemsToLocalDictOfImages(newImagesDict:foundDict)
+                    }
+                    
                     self.stillLoading = false
                     self.collectionView?.collectionViewLayout.invalidateLayout()
                     self.collectionView?.reloadData()
@@ -140,6 +273,36 @@ class GSCollectionViewController: UICollectionViewController {
                 print("Oops! Error while fetching: " + error.description)
             }
         }
+        
+    }
+    
+}
+
+//MARK: UIScrollView Delegate Methods
+
+extension GSCollectionViewController {
+    
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView,
+                                           willDecelerate decelerate: Bool) {
+        
+        getNewFLAnimatedImagesForVisibleCells()
+        
+    }
+    
+    override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    
+        getNewFLAnimatedImagesForVisibleCells()
+        
+    }
+    
+    override func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        
+        getNewFLAnimatedImagesForVisibleCells()
+        
+    }
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
         
     }
     
@@ -169,37 +332,22 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
         return sectionInfo.numberOfObjects
     }
     
-    
-    private func ifCellStillVisibleUpdateWithAnimatedImage(indexPath:IndexPath, convertedImage: FLAnimatedImage, rank: Int, cell: GSGifCollectionViewCell) {
-        if let value = self.collectionView?.indexPathsForVisibleItems.contains(indexPath) {
-            if value {
-                cell.rankLabel.text = "\(rank )"
-                cell.imageView.animatedImage = convertedImage
-            }
-        }
-    }
-    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GSGifCollectionViewCell", for: indexPath) as! GSGifCollectionViewCell
-        cell.imageView.animatedImage = nil
-        cell.imageView.image = nil
-        cell.imageView.backgroundColor = self.randomColor()
-        cell.rankLabel.text = "0"
-        let gifObject:GSGif = self.fetchedResultsController.object(at: indexPath)
-        
-        gifObject.managedObjectContext?.perform {
-            if let gifData:Data = gifObject.image as Data? {
-                let animatedImage:FLAnimatedImage = FLAnimatedImage(gifData: gifData)
-                DispatchQueue.main.async {
-                    //                        cell.imageView.animatedImage = gsGifObject?.image
-                    //                        cell.rankLabel.text = "\(gsGifObject?.rank  ?? 0)"
-                    //                     }
-                    
-                    self.ifCellStillVisibleUpdateWithAnimatedImage(indexPath: indexPath, convertedImage: animatedImage, rank: Int(gifObject.rank), cell: cell)
-                }
+
+        //only adds images for cells with GIFS in local array
+
+            let gifObject:GSGif = self.fetchedResultsController.object(at: indexPath)
+            if let foundImageForIndexPath:FLAnimatedImage = localDictOfAnimatedImages[indexPath.row]?.1 {
+                cell.image = foundImageForIndexPath
+                cell.rank = Int(gifObject.rank)
+                cell.color = randomColor()
+            } else {
+                cell.image = nil
+                cell.rank = Int(gifObject.rank)
+                cell.color = randomColor()
             }
 
-        }
 
         return cell
     }
@@ -216,23 +364,20 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
     override func collectionView(_ collectionView: UICollectionView,
                                  didSelectItemAt indexPath: IndexPath) {
         
-        guard let cellFound:GSGifCollectionViewCell = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell,
-            let gifDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "GSDetailViewControllerID") as? GSDetailViewController else {
-                return
-        }
-        
-        
-        let gifObject:NSManagedObject = self.fetchedResultsController.object(at: indexPath)
-        
-        //gifObject.managedObjectContext?.perform {
-            self.selectedIndexPath = indexPath
-            
-            gifDetailVC.detailGif = gifObject as? GSGif
-            gifDetailVC.colorForDetailPage = cellFound.imageView.backgroundColor
-            self.delegate = gifDetailVC
-            self.navigationController?.pushViewController(gifDetailVC, animated: true)
-        
-        //}
+//        guard let cellFound:GSGifCollectionViewCell = self.collectionView?.cellForItem(at: indexPath) as? GSGifCollectionViewCell,
+//            let gifDetailVC = self.storyboard?.instantiateViewController(withIdentifier: "GSDetailViewControllerID") as? GSDetailViewController else {
+//                return
+//        }
+//
+//
+//        let gifObject:GSGif = self.fetchedResultsController.object(at: indexPath)
+//
+//            self.selectedIndexPath = indexPath
+//
+//            gifDetailVC.detailGif = gifObject
+//            gifDetailVC.colorForDetailPage = cellFound.imageView.backgroundColor
+//            self.delegate = gifDetailVC
+//            self.navigationController?.pushViewController(gifDetailVC, animated: true)
         
     }
     

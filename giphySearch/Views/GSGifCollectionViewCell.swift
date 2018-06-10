@@ -15,17 +15,35 @@ class GSGifCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var rankLabel: UILabel!
     @IBOutlet weak var imageView: FLAnimatedImageView!
     
+    var image:FLAnimatedImage?
+    var rank:Int = 0
+    var color:UIColor = UIColor.black
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         //containerView.layer.cornerRadius = 6
         //containerView.layer.masksToBounds = true
+        imageView.animatedImage = nil
+        rankLabel.text = ""
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-        rankLabel.text = "0"
-        imageView.image = nil
+        imageView.animatedImage = nil
+        rankLabel.text = ""
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        setupCell()
     }
 
+    private func setupCell() {
+        rankLabel.text = "\(rank)"
+        if let foundImage = image {
+            imageView.animatedImage = foundImage
+        }
+        self.backgroundColor = color
+    }
+    
 }
