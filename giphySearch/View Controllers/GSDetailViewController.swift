@@ -14,7 +14,7 @@ protocol UpdateCollectionViewDelegate:class {
 }
 
 class GSDetailViewController: UIViewController {
-
+    
     @IBOutlet weak var imageView: FLAnimatedImageView!
     @IBOutlet weak var webButton: UIButton!
     @IBOutlet weak var rankLabel: UILabel!
@@ -22,14 +22,15 @@ class GSDetailViewController: UIViewController {
     @IBOutlet weak var rankDownButton: UIButton!
     @IBOutlet weak var rankButtonContainer: UIView!
     
-    var detailGif:GSGif?
     private var websiteURL:URL?
     private var rankBeforeSave:Int = 0
+    var detailGif:GSGif?
     var colorForDetailPage:UIColor?
+    var animatedImage:FLAnimatedImage?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         
         self.navigationItem.setHidesBackButton(true, animated: true)
         let customCloseButtonForNavbar = customCloseButton()
@@ -37,15 +38,15 @@ class GSDetailViewController: UIViewController {
         self.navigationItem.rightBarButtonItem = closeNavigationButton
         
         self.setupBackground()
-        //self.setupGifDetails()
-
+        self.setupGifDetails()
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     
     //MARK: - Helper
     
@@ -57,31 +58,38 @@ class GSDetailViewController: UIViewController {
         }
     }
     
-//    private func setupGifDetails() {
-//        if let foundMainImageData:Data = detailGif?.image as Data?,
-//            let foundMainImage:FLAnimatedImage = FLAnimatedImage(gifData: foundMainImageData),
-//           let foundTitle = detailGif?.name,
-//           let foundRank = detailGif?.rank,
-//           let foundWebsite = detailGif?.url {
-//            imageView.animatedImage = foundMainImage
-//            rankLabel.text = "\(foundRank)"
-//            rankBeforeSave = Int(foundRank)
-//            self.navigationItem.title = foundTitle
-//            self.websiteURL = foundWebsite
-//            rankUpButton.isEnabled = true
-//            rankDownButton.isEnabled = true
-//            webButton.isEnabled = true
-//        } else {
-//            imageView.image = UIImage(named: "placeholder.png")
-//            rankLabel.text = "0"
-//            rankBeforeSave = 0
-//            self.navigationItem.title = "unknown"
-//            self.websiteURL = nil
-//            rankUpButton.isEnabled = false
-//            rankDownButton.isEnabled = false
-//            webButton.isEnabled = false
-//        }
-//    }
+    private func setupGifDetails() {
+        if  let foundTitle = detailGif?.name,
+            let foundRank = detailGif?.rank{
+            rankLabel.text = "\(foundRank)"
+            rankBeforeSave = Int(foundRank)
+            self.navigationItem.title = foundTitle
+            rankUpButton.isEnabled = true
+            rankDownButton.isEnabled = true
+            webButton.isEnabled = true
+        } else {
+            rankLabel.text = "0"
+            rankBeforeSave = 0
+            self.navigationItem.title = "unknown"
+            self.websiteURL = nil
+            rankUpButton.isEnabled = false
+            rankDownButton.isEnabled = false
+            webButton.isEnabled = false
+        }
+        
+        //check url
+        if let foundWebsite = detailGif?.url {
+            self.websiteURL = foundWebsite
+        }
+        
+        //check image
+        if let foundAnimatedImage:FLAnimatedImage = animatedImage {
+            imageView.animatedImage = foundAnimatedImage
+        } else {
+            imageView.animatedImage = nil
+            
+        }
+    }
     
     @objc func close() {
         if let foundDetailGif:GSGif = detailGif {
@@ -90,16 +98,16 @@ class GSDetailViewController: UIViewController {
         
         //delegate?.reloadAfterNewRank()
         
-//        if let foundGSCollectionViewController =  as? GSCollectionViewController {
-//            foundGSCollectionViewController.collectionView?.updateCollectionView()
-//        }
+        //        if let foundGSCollectionViewController =  as? GSCollectionViewController {
+        //            foundGSCollectionViewController.collectionView?.updateCollectionView()
+        //        }
     }
     
     func customCloseButton() -> UIView {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "close.png"), for: .normal)
         button.addTarget(self, action: #selector(close), for: .touchUpInside)
-
+        
         return button
     }
     
@@ -134,6 +142,8 @@ class GSDetailViewController: UIViewController {
         rankBeforeSave -= 1
         updateLocalRank()
     }
+    
+    
 }
 
 extension GSDetailViewController:UpdateCollectionViewDelegate {

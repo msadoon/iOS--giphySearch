@@ -38,7 +38,7 @@ class GSDataManager {
     
     func addNewGifs() {
         
-        var newGifObjects:[Int:FLAnimatedImage] = [:]
+        var newGifObjects:[String:FLAnimatedImage] = [:]
         
         for index in 0..<gifs.count {
             
@@ -63,7 +63,7 @@ class GSDataManager {
                 newGif.width = Int32(foundGifWidthInt)
                 newGif.searchTerm = GSNetworkManager.currentSearchTerm
                 
-                newGifObjects[index + currentNumberOfGifsDownloadedForSearchTerm] = foundGifAnimatedImage
+                newGifObjects[foundGifIDString] = foundGifAnimatedImage
                 
             }
             
@@ -78,6 +78,7 @@ class GSDataManager {
         }
         
         self.gettingACurrentBatchOfGifs = false
+        
         NotificationCenter.default.post(name: .newGifsDownloaded, object: newGifObjects)
         
     }
@@ -180,6 +181,8 @@ class GSDataManager {
                     if index < self.gifs.count {
                         if status {
                             let animatedImage:FLAnimatedImage = FLAnimatedImage(animatedGIFData: dataForImage, optimalFrameCacheSize: 3, predrawingEnabled: false)
+                            print(index)
+                            print(url)
                             self.gifs[index]["animatedImage"] = animatedImage
                         } else {
                             print("fail")
