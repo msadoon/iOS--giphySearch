@@ -37,7 +37,7 @@ class GSDetailViewController: UIViewController {
         self.navigationItem.rightBarButtonItem = closeNavigationButton
         
         self.setupBackground()
-        self.setupGifDetails()
+        //self.setupGifDetails()
 
     }
 
@@ -57,31 +57,31 @@ class GSDetailViewController: UIViewController {
         }
     }
     
-    private func setupGifDetails() {
-        if let foundMainImageData:Data = detailGif?.image as Data?,
-            let foundMainImage:FLAnimatedImage = FLAnimatedImage(gifData: foundMainImageData),
-           let foundTitle = detailGif?.name,
-           let foundRank = detailGif?.rank,
-           let foundWebsite = detailGif?.url {
-            imageView.animatedImage = foundMainImage
-            rankLabel.text = "\(foundRank)"
-            rankBeforeSave = Int(foundRank)
-            self.navigationItem.title = foundTitle
-            self.websiteURL = foundWebsite
-            rankUpButton.isEnabled = true
-            rankDownButton.isEnabled = true
-            webButton.isEnabled = true
-        } else {
-            imageView.image = UIImage(named: "placeholder.png")
-            rankLabel.text = "0"
-            rankBeforeSave = 0
-            self.navigationItem.title = "unknown"
-            self.websiteURL = nil
-            rankUpButton.isEnabled = false
-            rankDownButton.isEnabled = false
-            webButton.isEnabled = false
-        }
-    }
+//    private func setupGifDetails() {
+//        if let foundMainImageData:Data = detailGif?.image as Data?,
+//            let foundMainImage:FLAnimatedImage = FLAnimatedImage(gifData: foundMainImageData),
+//           let foundTitle = detailGif?.name,
+//           let foundRank = detailGif?.rank,
+//           let foundWebsite = detailGif?.url {
+//            imageView.animatedImage = foundMainImage
+//            rankLabel.text = "\(foundRank)"
+//            rankBeforeSave = Int(foundRank)
+//            self.navigationItem.title = foundTitle
+//            self.websiteURL = foundWebsite
+//            rankUpButton.isEnabled = true
+//            rankDownButton.isEnabled = true
+//            webButton.isEnabled = true
+//        } else {
+//            imageView.image = UIImage(named: "placeholder.png")
+//            rankLabel.text = "0"
+//            rankBeforeSave = 0
+//            self.navigationItem.title = "unknown"
+//            self.websiteURL = nil
+//            rankUpButton.isEnabled = false
+//            rankDownButton.isEnabled = false
+//            webButton.isEnabled = false
+//        }
+//    }
     
     @objc func close() {
         if let foundDetailGif:GSGif = detailGif {

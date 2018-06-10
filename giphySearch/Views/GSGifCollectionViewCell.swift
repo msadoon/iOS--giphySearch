@@ -17,7 +17,7 @@ class GSGifCollectionViewCell: UICollectionViewCell {
     
     var image:FLAnimatedImage?
     var rank:Int = 0
-    var color:UIColor = UIColor.black
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -25,12 +25,16 @@ class GSGifCollectionViewCell: UICollectionViewCell {
         //containerView.layer.masksToBounds = true
         imageView.animatedImage = nil
         rankLabel.text = ""
+        imageView.image = nil
+     
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         imageView.animatedImage = nil
+        imageView.image = nil
         rankLabel.text = ""
+        
     }
     
     override func layoutSubviews() {
@@ -43,7 +47,7 @@ class GSGifCollectionViewCell: UICollectionViewCell {
         if let foundImage = image {
             imageView.animatedImage = foundImage
         }
-        self.backgroundColor = color
+        
     }
     
 }

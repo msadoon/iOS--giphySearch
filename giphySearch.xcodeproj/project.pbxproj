@@ -21,6 +21,7 @@
 		8E770D2620CB06180010244B /* GSLoadingCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E770D2520CB06180010244B /* GSLoadingCollectionReusableView.swift */; };
 		8E7F02BF20CBFE4800E87CB5 /* GSGif+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7F02BD20CBFE4800E87CB5 /* GSGif+CoreDataProperties.swift */; };
 		8E7F02C020CBFE4800E87CB5 /* GSGif+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7F02BE20CBFE4800E87CB5 /* GSGif+CoreDataClass.swift */; };
+		8E7F02C420CD73FA00E87CB5 /* GSLocalCacheObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7F02C320CD73FA00E87CB5 /* GSLocalCacheObject.swift */; };
 		8E85530620C832050090E29C /* GSNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E85530520C832050090E29C /* GSNetworkManager.swift */; };
 		8E85530C20C864CD0090E29C /* GSDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E85530B20C864CD0090E29C /* GSDetailViewController.swift */; };
 		8E85530E20C875530090E29C /* GSTransitionCustomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E85530D20C875530090E29C /* GSTransitionCustomAnimator.swift */; };
@@ -63,6 +64,7 @@
 		8E770D2520CB06180010244B /* GSLoadingCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GSLoadingCollectionReusableView.swift; sourceTree = "<group>"; };
 		8E7F02BD20CBFE4800E87CB5 /* GSGif+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GSGif+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8E7F02BE20CBFE4800E87CB5 /* GSGif+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GSGif+CoreDataClass.swift"; sourceTree = "<group>"; };
+		8E7F02C320CD73FA00E87CB5 /* GSLocalCacheObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GSLocalCacheObject.swift; sourceTree = "<group>"; };
 		8E85530520C832050090E29C /* GSNetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GSNetworkManager.swift; sourceTree = "<group>"; };
 		8E85530820C846870090E29C /* GSCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GSCollectionViewLayout.swift; sourceTree = "<group>"; };
 		8E85530B20C864CD0090E29C /* GSDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GSDetailViewController.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 		8E29FC2D20C6E45700A7CC52 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				8E7F02C320CD73FA00E87CB5 /* GSLocalCacheObject.swift */,
 				8E7F02BE20CBFE4800E87CB5 /* GSGif+CoreDataClass.swift */,
 				8E7F02BD20CBFE4800E87CB5 /* GSGif+CoreDataProperties.swift */,
 			);
@@ -417,6 +420,7 @@
 				8E29FC3120C6E4B000A7CC52 /* GSGifCollectionViewCell.swift in Sources */,
 				8E85530C20C864CD0090E29C /* GSDetailViewController.swift in Sources */,
 				8E7F02C020CBFE4800E87CB5 /* GSGif+CoreDataClass.swift in Sources */,
+				8E7F02C420CD73FA00E87CB5 /* GSLocalCacheObject.swift in Sources */,
 				8E85531120C88AD00090E29C /* UIView+Screenshot.swift in Sources */,
 				8E85531720C9CA840090E29C /* Notification+Name.swift in Sources */,
 				8E770D2220C9E8DD0010244B /* GSCoreDataStack.swift in Sources */,

@@ -18,7 +18,6 @@ extension GSGif {
 
     @NSManaged public var height: Int32
     @NSManaged public var id: String?
-    @NSManaged public var image: NSData?
     @NSManaged public var name: String?
     @NSManaged public var rank: Int32
     @NSManaged public var searchTerm: String?

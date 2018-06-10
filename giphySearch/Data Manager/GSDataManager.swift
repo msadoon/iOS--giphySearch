@@ -18,6 +18,7 @@ class GSDataManager {
     static let sharedInstance:GSDataManager = GSDataManager()
     
     private var gifs:[[String:AnyObject]] = []
+    private var gifsForVisibleCells:[Int:AnyObject] = [:]
     private var gettingACurrentBatchOfGifs:Bool = false
     private var currentNumberOfGifsDownloadedForSearchTerm:Int = 0
     private let queue:OperationQueue = OperationQueue()
@@ -43,7 +44,6 @@ class GSDataManager {
             
             if let foundGifName:String = gifs[index]["name"] as? String,
                 let foundGifIDString:String = gifs[index]["id"] as? String,
-                let foundGifImage:NSData = gifs[index]["imageData"] as? NSData,
                 let foundGifAnimatedImage:FLAnimatedImage = gifs[index]["animatedImage"] as? FLAnimatedImage,
                 let foundGifURL:URL = gifs[index]["url"] as? URL,
                 let foundGifHeight:String = gifs[index]["height"] as? String,
@@ -58,7 +58,6 @@ class GSDataManager {
                 
                 newGif.name = foundGifName
                 newGif.id = foundGifIDString
-                newGif.image = foundGifImage
                 newGif.url = foundGifURL
                 newGif.height = Int32(foundGifHeightInt)
                 newGif.width = Int32(foundGifWidthInt)
@@ -128,6 +127,22 @@ class GSDataManager {
         return allResults
     }
     
+    func addNewGifsForVisibleCells() {
+        
+        var newGifObjects:[Int:FLAnimatedImage] = [:]
+        
+        for key in gifsForVisibleCells.keys {
+            if let foundGifAnimatedImage:FLAnimatedImage = gifsForVisibleCells[key] as? FLAnimatedImage {
+                newGifObjects[key] = foundGifAnimatedImage
+            }
+        }
+        
+        gifsForVisibleCells = [:]
+        
+        NotificationCenter.default.post(name: .convertedAllImages, object: newGifObjects)
+        
+    }
+    
     //MARK: Network
 
     func getAllGiphJSONData(searchTerm:String) -> Bool {
@@ -165,10 +180,7 @@ class GSDataManager {
                     if index < self.gifs.count {
                         if status {
                             let animatedImage:FLAnimatedImage = FLAnimatedImage(animatedGIFData: dataForImage, optimalFrameCacheSize: 3, predrawingEnabled: false)
-                            if let foundData:NSData = dataForImage as NSData? {
-                                self.gifs[index]["imageData"] = foundData
-                                self.gifs[index]["animatedImage"] = animatedImage
-                            }
+                            self.gifs[index]["animatedImage"] = animatedImage
                         } else {
                             print("fail")
                         }
@@ -188,28 +200,31 @@ class GSDataManager {
     
     //MARK: Helper Methods
     
-    func convertImagesForThisData(allImageData:[Int: Data]) {
+    func convertImagesForThisData(allImageData:[Int: URL]) {
         
         var operationsCompleted:Int = 0
         
-        var returnableImages:[Int:FLAnimatedImage] = [:]
-        
         for key in allImageData.keys {
             
+            guard let url:URL = allImageData[key] else {
+                continue
+            }
+            
             let operation:BlockOperation = BlockOperation( block: {
-                
-                DispatchQueue.global(qos:.userInitiated).async {
-                    if let foundFLAnimatedImage:FLAnimatedImage = FLAnimatedImage(animatedGIFData: allImageData[key], optimalFrameCacheSize: 3, predrawingEnabled: false) {
-                        returnableImages[key] = foundFLAnimatedImage
-                    }
+                GSNetworkManager.downloadImageData(url: url, completion: {
+                    (status, dataForImage) in
                     
-                    operationsCompleted += 1
-                    if operationsCompleted == allImageData.count {
-                        NotificationCenter.default.post(name: .convertedAllImages, object: returnableImages)
-                    }
-                }
-                
-
+                        if status {
+                            let animatedImage:FLAnimatedImage = FLAnimatedImage(animatedGIFData: dataForImage, optimalFrameCacheSize: 3, predrawingEnabled: false)
+                            self.gifsForVisibleCells[key] = animatedImage
+                        } else {
+                            print("fail")
+                        }
+                        operationsCompleted += 1
+                        if operationsCompleted == allImageData.count {
+                            self.addNewGifsForVisibleCells()
+                        }
+                })
             })
             
             queue.addOperation(operation)
