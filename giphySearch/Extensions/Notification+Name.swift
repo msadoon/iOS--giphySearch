@@ -13,6 +13,6 @@ extension Notification.Name {
     static let newGifsDownloaded = Notification.Name("newGifs")
     static let gifUpdatedRank = Notification.Name("rankUpdate")
     static let deletedAllGifsForSearchTerm = Notification.Name("deletedAll")
-    static let convertedAllImages = Notification.Name("convertedDataToFLAnimatedImage")
+    static let convertedURLToImages = Notification.Name("convertedURLToFLAnimatedImage")
     
 }

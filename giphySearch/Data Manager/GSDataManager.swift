@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 import FLAnimatedImage
 
-class GSDataManager {
+final class GSDataManager {
     
     let coreDataStack:GSCoreDataStack
     let managedContext:NSManagedObjectContext
@@ -34,9 +34,17 @@ class GSDataManager {
         self.loadSearchHistoryInUserDefaults()
     }
     
+    //for testing
+    public init(stack: GSCoreDataStack, context: NSManagedObjectContext) {
+        self.coreDataStack = stack
+        self.managedContext = context
+        queue.maxConcurrentOperationCount = 4
+        self.loadSearchHistoryInUserDefaults()
+    }
+    
     //MARK: Core Data Operations
     
-    func addNewGifs() {
+    private func addNewGifs() {
         
         var newGifObjects:[String:FLAnimatedImage] = [:]
         
@@ -126,7 +134,23 @@ class GSDataManager {
         return allResults
     }
     
-    func addNewGifsForVisibleCells() {
+    func findAGif(id: String) -> GSGif? {
+        let gsgifFetchRequest:NSFetchRequest<GSGif> = GSGif.fetchRequest()
+        gsgifFetchRequest.predicate = NSPredicate(format: "id == %@", id)
+        
+        do {
+            let foundResults = try self.managedContext.fetch(gsgifFetchRequest)
+            if foundResults.count > 0 {
+                return foundResults.first
+            }
+        } catch {
+            return nil
+        }
+        
+        return nil
+    }
+    
+    private func addNewGifsForVisibleCells() {
         
         var newGifObjects:[Int:FLAnimatedImage] = [:]
         
@@ -138,7 +162,7 @@ class GSDataManager {
         
         gifsForVisibleCells = [:]
         
-        NotificationCenter.default.post(name: .convertedAllImages, object: newGifObjects)
+        NotificationCenter.default.post(name: .convertedURLToImages, object: newGifObjects)
         
     }
     
@@ -204,7 +228,7 @@ class GSDataManager {
     }
 
     
-    func convertImagesForThisData(allImageData:[Int: URL]) {
+    func getImagesForURLS(allImageData:[Int: URL]) {
         
         var operationsCompleted:Int = 0
         

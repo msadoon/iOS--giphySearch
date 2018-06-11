@@ -80,12 +80,13 @@ class GSCollectionViewController: UICollectionViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(self.onDidReceiveData(_:)), name: .newGifsDownloaded, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.onDidReceiveDataForVisibleCells(_:)), name: .convertedAllImages, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onDidReceiveDataForVisibleCells(_:)), name: .convertedURLToImages, object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: .newGifsDownloaded, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .convertedURLToImages, object: nil)
     }
     
     //MARK: Helper Methods
@@ -267,7 +268,7 @@ class GSCollectionViewController: UICollectionViewController {
                                 
                                 print("call made to get visible indexpath flanimatedimages. keys to get: ", self.dictionaryOfIndexPathsWithoutFLAnimatedImages.keys)
                                 
-                                GSDataManager.sharedInstance.convertImagesForThisData(allImageData:self.dictionaryOfIndexPathsWithoutFLAnimatedImages)
+                                GSDataManager.sharedInstance.getImagesForURLS(allImageData:self.dictionaryOfIndexPathsWithoutFLAnimatedImages)
                             }
                             
                         }
