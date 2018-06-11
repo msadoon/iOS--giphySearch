@@ -24,7 +24,7 @@ public class GSNetworkManager {
     
     static func getGiphs(searchTerm:String, completion: @escaping (_ status: Bool, _ records:[[String:AnyObject]])->()) {
         
-        guard let urlForSearch:URL = URL(string: GiphyAPI.searchTermBaseURL.rawValue + searchTerm + GiphyAPI.searchTermOffset.rawValue + "\(currentOffset)" + GiphyAPI.searchTermLimit.rawValue + "\(currentLimit)") else {
+        guard let percentEncodedString = searchTerm.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed), let urlForSearch:URL = URL(string: GiphyAPI.searchTermBaseURL.rawValue + percentEncodedString + GiphyAPI.searchTermOffset.rawValue + "\(currentOffset)" + GiphyAPI.searchTermLimit.rawValue + "\(currentLimit)") else {
             completion(false, [])
             return
         }
@@ -47,14 +47,9 @@ public class GSNetworkManager {
                     //parse data in model
                 
                 guard let jsonData:[String:AnyObject] = try? JSONSerialization.jsonObject(with: data, options: [.mutableContainers]) as! [String : AnyObject],
-                      let completeDataDictionary:[[String:AnyObject]] = jsonData["data"] as? [[String:AnyObject]],
-                      let paginationDictionary:[String: AnyObject] = jsonData["pagination"] as? [String:AnyObject] else {
+                      let completeDataDictionary:[[String:AnyObject]] = jsonData["data"] as? [[String:AnyObject]] else {
                     completion(false, [])
                     return
-                }
-                
-                if let currentObjectCount:Int = paginationDictionary["count"] as? Int{
-                    self.currentOffset += currentObjectCount
                 }
                 
                 var allRecords:[[String:AnyObject]] = []
@@ -112,6 +107,12 @@ public class GSNetworkManager {
         
         task.resume()
         
+    }
+    
+    //MARK: Helper Methods
+    
+    static func setCurrentOffsetForSearchTerm(newOffset: Int) {
+        currentOffset = newOffset
     }
     
 }

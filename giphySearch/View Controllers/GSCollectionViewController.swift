@@ -29,21 +29,22 @@ class GSCollectionViewController: UICollectionViewController {
     
     var selectedIndexPath:IndexPath? = nil
     weak var delegate:UpdateCollectionViewDelegate?
-    let searchTerm = "Cats"
+    private var currentSearchTerm = ""
     private var stillLoading:Bool = false
     private var localDictOfAnimatedImages:[Int:GSLocalCacheObject] = [:]
     private var updateFLAnimatedImagesReturnedFromDataManager: Bool = true
     private var dictionaryOfIndexPathsWithoutFLAnimatedImages:[Int: URL] = [:]
     private var dateUsedForSorting:Date = Date()
     private var lastTimeIntervalsForCache:[TimeInterval] = []
-    private var delayToWaitForScrolling:Double = 2.0
+    private var delayToWaitForScrolling:Double = 1.0
     private var readyToLoadViewableCells:Bool = false
     private var allIndexPathsToBeFetched:[IndexPath] = []
+    private var brandNewFetchMade:Bool = true
     
     lazy var fetchedResultsController: NSFetchedResultsController<GSGif> = {
         let fetchRequest: NSFetchRequest<GSGif> = GSGif.fetchRequest()
         let rankSort = NSSortDescriptor(key: #keyPath(GSGif.rank), ascending: false)
-        let predicate = NSPredicate(format: "%K == %@", #keyPath(GSGif.searchTerm), searchTerm)
+        let predicate = NSPredicate(format: "%K == %@", #keyPath(GSGif.searchTerm), currentSearchTerm)
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = [rankSort]
         fetchRequest.fetchBatchSize = 20
@@ -208,7 +209,7 @@ class GSCollectionViewController: UICollectionViewController {
             }
         }
         
-        print("allIndexPathsToBeFetched ", allIndexPathsToBeFetched.count)
+        //print("allIndexPathsToBeFetched ", allIndexPathsToBeFetched.count)
         
     }
     
@@ -225,13 +226,21 @@ class GSCollectionViewController: UICollectionViewController {
             }
         }
         
-        print("allIndexPathsToBeFetched NewRank ", allIndexPathsToBeFetched.count)
+        //print("allIndexPathsToBeFetched NewRank ", allIndexPathsToBeFetched.count)
         
     }
     
     private func updateDateIndexPathsToBeFetched() {
         if let foundAllVisibleIndexPaths:[IndexPath] = self.collectionView?.indexPathsForVisibleItems {
             addNewIndexPathsToBeUpdated(indexPaths: foundAllVisibleIndexPaths)
+        }
+    }
+    
+    private func searchTermMadeBefore() -> Bool {
+        if GSDataManager.sharedInstance.searchTermsAndOffsets.keys.contains(self.currentSearchTerm.lowercased()) {
+            return true
+        } else {
+            return false
         }
     }
     
@@ -269,10 +278,45 @@ class GSCollectionViewController: UICollectionViewController {
                 
             }
             
-            
         }
         
-        
+    }
+    
+    private func loadCollectionViewInvalidateLayout() {
+        self.collectionView?.collectionViewLayout.invalidateLayout()
+        self.collectionView?.reloadData()
+    }
+    
+    private func queryFetchedResultsViewControllerForCurrentSearchTerm() {
+        GSDataManager.sharedInstance.coreDataStack.storeContainer.performBackgroundTask {
+            context in
+            do {
+                self.localDictOfAnimatedImages.removeAll()
+                let predicate = NSPredicate(format: "%K == %@", #keyPath(GSGif.searchTerm), self.currentSearchTerm)
+                self.fetchedResultsController.fetchRequest.predicate = predicate
+                try self.fetchedResultsController.performFetch()
+                
+                DispatchQueue.main.async {
+                    
+                    var newIndexPathsSynchronizedWithFetchedResults:[IndexPath] = []
+                    if let foundObjects = self.fetchedResultsController.sections?[0].objects {
+                        let loopEndValue = foundObjects.count > GSDataManager.sharedInstance.getCurrentLimit ? GSDataManager.sharedInstance.getCurrentLimit : foundObjects.count
+                        for index in 0..<loopEndValue {
+                            newIndexPathsSynchronizedWithFetchedResults.append(IndexPath(row: index, section: 0))
+                        }
+                    }
+                    
+                    self.stillLoading = false
+                    self.brandNewFetchMade = false
+                    self.getNewFLAnimatedImagesForVisibleCells(indexPaths:newIndexPathsSynchronizedWithFetchedResults)
+                    self.loadCollectionViewInvalidateLayout()
+
+                }
+                
+            } catch let error as NSError {
+                print("Oops! Error while fetching: " + error.description)
+            }
+        }
     }
     
     //MARK: Notification Methods
@@ -294,7 +338,6 @@ class GSCollectionViewController: UICollectionViewController {
                 }
             }
             
-            
         }
         
     }
@@ -304,13 +347,14 @@ class GSCollectionViewController: UICollectionViewController {
         GSDataManager.sharedInstance.coreDataStack.storeContainer.performBackgroundTask {
             context in
             do {
-                
+                let predicate = NSPredicate(format: "%K == %@", #keyPath(GSGif.searchTerm), self.currentSearchTerm)
+                self.fetchedResultsController.fetchRequest.predicate = predicate
                 try self.fetchedResultsController.performFetch()
                 
                 DispatchQueue.main.async {
                     
                     var newDictionarySynchronizedWithFetchedResults:[Int:FLAnimatedImage] = [:]
-                                        if let foundObjects = self.fetchedResultsController.sections?[0].objects,
+                    if let foundObjects = self.fetchedResultsController.sections?[0].objects,
                         let foundDict:[String:FLAnimatedImage] = notification.object as? [String:FLAnimatedImage] {
                         
                         var orderedSetOfKeys:[String] = []
@@ -327,14 +371,14 @@ class GSCollectionViewController: UICollectionViewController {
                                 newDictionarySynchronizedWithFetchedResults[index] = foundValueForKey
                             }
                         }
-   
+                        
                     }
                     
                     self.addNewItemsToLocalDictOfImages(newImagesDict:newDictionarySynchronizedWithFetchedResults)
                     
                     self.stillLoading = false
-                    self.collectionView?.collectionViewLayout.invalidateLayout()
-                    self.collectionView?.reloadData()
+                    self.brandNewFetchMade = false
+                    self.loadCollectionViewInvalidateLayout()
                 }
                 
             } catch let error as NSError {
@@ -416,8 +460,12 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
         guard let sectionInfo = fetchedResultsController.sections?[section] else {
             return 0
         }
-        
-        return sectionInfo.numberOfObjects
+        if brandNewFetchMade {
+            return 0
+        } else {
+            return sectionInfo.numberOfObjects
+        }
+
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -455,6 +503,10 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
     override func collectionView(_ collectionView: UICollectionView,
                                  didSelectItemAt indexPath: IndexPath) {
         
+        if stillLoading {
+            return
+        }
+ 
         guard let foundAnimatedImage:FLAnimatedImage = localDictOfAnimatedImages[indexPath.row]?.image else {
             return
         }
@@ -485,10 +537,36 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
         } else if (kind == UICollectionElementKindSectionFooter) {
             let footerView:GSLoadingCollectionReusableView =  collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionFooter, withReuseIdentifier: "LoadingViewInFooter", for: indexPath) as! GSLoadingCollectionReusableView
             footerView.delegate = self
-            if !stillLoading {
-                footerView.loadingImageView.isHidden = true
-                footerView.loadingButton.isHidden = false
+            
+            footerView.loadingButton.setTitle("I want more \(self.currentSearchTerm)!", for: .normal)
+            //start layout for a new search
+            footerView.loadingImageView.image = UIImage(named:"giphySearchAppIconLoading")
+            if brandNewFetchMade {
+                if stillLoading {
+                    footerView.loadingImageView.isHidden = false
+                    footerView.loadingButton.isHidden = true
+                } else {
+                    footerView.loadingImageView.isHidden = true
+                    footerView.loadingButton.isHidden = true
+                }
+            } else {
+                if stillLoading {
+                    footerView.loadingImageView.isHidden = false
+                    footerView.loadingButton.isHidden = true
+                } else {
+                    if self.fetchedResultsController.sections?[0].numberOfObjects == 0 {
+                        footerView.loadingImageView.image = UIImage(named:"empty-box-open")
+                        footerView.loadingImageView.isHidden = false
+                        footerView.loadingButton.isHidden = true
+                    } else {
+                        footerView.loadingImageView.isHidden = true
+                        footerView.loadingButton.isHidden = false
+                    }
+                }
             }
+            
+            
+            
             return footerView
         }
         
@@ -609,7 +687,7 @@ extension GSCollectionViewController: NSFetchedResultsControllerDelegate {
 extension GSCollectionViewController: LoadMoreGifsProtocol {
     
     func loadMoreGifs() {
-        stillLoading = GSDataManager.sharedInstance.getAllGiphJSONData(searchTerm: searchTerm)
+        stillLoading = GSDataManager.sharedInstance.getAllGiphJSONData(searchTerm: currentSearchTerm, newSearch: false)
     }
     
 }
@@ -618,18 +696,39 @@ extension GSCollectionViewController: LoadMoreGifsProtocol {
 
 extension GSCollectionViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.text = ""
         searchBar.resignFirstResponder()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        //        if(!()){
-        //reload your data source if necessary
-        self.collectionView?.reloadData()
-        //        }
+        if stillLoading {
+            searchBar.resignFirstResponder()
+            return
+        }
+        
+        if !currentSearchTerm.isEmpty {
+            searchBar.resignFirstResponder()
+            if self.searchTermMadeBefore() {
+                brandNewFetchMade = true
+                self.stillLoading = true
+                self.queryFetchedResultsViewControllerForCurrentSearchTerm()
+                
+            } else {
+                brandNewFetchMade = true
+                stillLoading = GSDataManager.sharedInstance.getAllGiphJSONData(searchTerm: currentSearchTerm, newSearch: true)
+                self.loadCollectionViewInvalidateLayout()
+                
+            }
+        }
+        
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
+        if stillLoading {
+            searchBar.resignFirstResponder()
+            return
+        }
+        self.currentSearchTerm = searchText.lowercased()
     }
 }
 

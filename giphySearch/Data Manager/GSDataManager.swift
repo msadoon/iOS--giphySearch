@@ -20,9 +20,9 @@ class GSDataManager {
     private var gifs:[[String:AnyObject]] = []
     private var gifsForVisibleCells:[Int:AnyObject] = [:]
     private var gettingACurrentBatchOfGifs:Bool = false
-    private var currentNumberOfGifsDownloadedForSearchTerm:Int = 0
     private let queue:OperationQueue = OperationQueue()
-    
+    var searchTermsAndOffsets:[String: Int] = [:]
+    let userDefaults = UserDefaults.standard
     var getCurrentLimit:Int = {
         return GSNetworkManager.currentLimit
     }()
@@ -31,7 +31,7 @@ class GSDataManager {
         self.coreDataStack = GSCoreDataStack.sharedInstance
         self.managedContext = coreDataStack.newBackgroundContext
         queue.maxConcurrentOperationCount = 4
-        
+        self.loadSearchHistoryInUserDefaults()
     }
     
     //MARK: Core Data Operations
@@ -68,8 +68,6 @@ class GSDataManager {
             }
             
         }
-        
-        currentNumberOfGifsDownloadedForSearchTerm += gifs.count
         
         gifs = []
         
@@ -146,12 +144,14 @@ class GSDataManager {
     
     //MARK: Network
 
-    func getAllGiphJSONData(searchTerm:String) -> Bool {
+    func getAllGiphJSONData(searchTerm:String, newSearch:Bool) -> Bool {
         
         if !self.gettingACurrentBatchOfGifs {
             self.gettingACurrentBatchOfGifs = true
             
-            GSNetworkManager.getGiphs(searchTerm:searchTerm, completion: { (status, records) in
+            self.updateSearchHistoryAndSetCurrentOffset(searchTerm: searchTerm, newSearch: newSearch)
+            
+            GSNetworkManager.getGiphs(searchTerm:searchTerm.lowercased(), completion: { (status, records) in
                 
                 if status {
                     self.updateModelDataWith(newGifs: records)
@@ -167,6 +167,10 @@ class GSDataManager {
     
     private func downloadAllImageData() {
         
+        if gifs.count == 0 { //immediately call next method to exit data manager
+            self.addNewGifs()
+        }
+        
         var operationsCompleted:Int = 0
         
         for index in 0..<gifs.count {
@@ -181,8 +185,6 @@ class GSDataManager {
                     if index < self.gifs.count {
                         if status {
                             let animatedImage:FLAnimatedImage = FLAnimatedImage(animatedGIFData: dataForImage, optimalFrameCacheSize: 3, predrawingEnabled: false)
-                            print(index)
-                            print(url)
                             self.gifs[index]["animatedImage"] = animatedImage
                         } else {
                             print("fail")
@@ -200,8 +202,7 @@ class GSDataManager {
         }
         
     }
-    
-    //MARK: Helper Methods
+
     
     func convertImagesForThisData(allImageData:[Int: URL]) {
         
@@ -232,6 +233,38 @@ class GSDataManager {
             
             queue.addOperation(operation)
             
+        }
+    }
+    
+    //Helper Methods
+    
+    private func updateSearchHistoryAndSetCurrentOffset(searchTerm:String, newSearch:Bool) {
+        
+        let searchTermToAddToSearchHistory = searchTerm.lowercased()
+        
+        if newSearch {
+            self.searchTermsAndOffsets[searchTermToAddToSearchHistory] = 0
+            GSNetworkManager.setCurrentOffsetForSearchTerm(newOffset: 0)
+            self.saveSearchHistoryInUserDefaults()
+        } else {
+            if let foundOffset = self.searchTermsAndOffsets[searchTermToAddToSearchHistory] {
+                let newOffset = foundOffset+GSNetworkManager.currentLimit
+                GSNetworkManager.setCurrentOffsetForSearchTerm(newOffset: newOffset)
+                self.searchTermsAndOffsets[searchTermToAddToSearchHistory] = newOffset
+                self.saveSearchHistoryInUserDefaults()
+            } else {
+                GSNetworkManager.setCurrentOffsetForSearchTerm(newOffset: 0)
+            }
+        }
+    }
+    
+    private func saveSearchHistoryInUserDefaults() {
+        userDefaults.set(searchTermsAndOffsets, forKey: "searchHistory")
+    }
+    
+    private func loadSearchHistoryInUserDefaults() {
+        if let foundSearchHistory = userDefaults.dictionary(forKey: "searchHistory") {
+            searchTermsAndOffsets = foundSearchHistory as! [String : Int]
         }
     }
     
