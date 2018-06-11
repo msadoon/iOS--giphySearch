@@ -121,9 +121,21 @@ class GSCollectionViewController: UICollectionViewController {
         //        if let layout = collectionView?.collectionViewLayout as? GSCollectionViewLayout {
         //            layout.delegate = self
         //        }
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(endEditingOnSearchBar))
+        tap.cancelsTouchesInView = false
+        self.collectionView?.addGestureRecognizer(tap)
+        
         collectionView?.prefetchDataSource = self
         collectionView?.backgroundColor = .clear
         collectionView?.contentInset = UIEdgeInsets(top: 23, left: 16, bottom: 10, right: 16)
+    }
+    
+    @objc func endEditingOnSearchBar() {
+        if let foundSupplementaryViews:[UICollectionReusableView] = self.collectionView?.visibleSupplementaryViews(ofKind: UICollectionElementKindSectionHeader), let firstHeaderView:GSSearchCollectionReusableView = foundSupplementaryViews.first as? GSSearchCollectionReusableView{
+            firstHeaderView.searchBar?.resignFirstResponder()
+        }
+        
     }
     
     private func returnArrayOfIndexPathsBetweenTwoDistantRowsInSameSection(beginIndexPath: IndexPath, endIndexPath: IndexPath, section: Int) -> [IndexPath] {
@@ -311,7 +323,7 @@ class GSCollectionViewController: UICollectionViewController {
                     self.brandNewFetchMade = false
                     self.getNewFLAnimatedImagesForVisibleCells(indexPaths:newIndexPathsSynchronizedWithFetchedResults)
                     self.loadCollectionViewInvalidateLayout()
-
+                    
                 }
                 
             } catch let error as NSError {
@@ -436,6 +448,7 @@ extension GSCollectionViewController {
     }
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+
         readyToLoadViewableCells = false
     }
     
@@ -466,7 +479,7 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
         } else {
             return sectionInfo.numberOfObjects
         }
-
+        
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -507,7 +520,7 @@ extension GSCollectionViewController: UICollectionViewDelegateFlowLayout {
         if stillLoading {
             return
         }
- 
+        
         guard let foundAnimatedImage:FLAnimatedImage = localDictOfAnimatedImages[indexPath.row]?.image else {
             return
         }
@@ -629,7 +642,7 @@ extension GSCollectionViewController: NSFetchedResultsControllerDelegate {
                                     }
                                 }
                             }
-
+                            
                         } else if foundNewIndexPath.row < foundOldIndexPath.row {
                             self.collectionView?.scrollToItem(at: foundNewIndexPath, at: UICollectionViewScrollPosition.bottom, animated: true)
                             
@@ -660,7 +673,7 @@ extension GSCollectionViewController: NSFetchedResultsControllerDelegate {
                             }
                             
                         }
-
+                        
                         self.collectionView?.reloadItems(at: arrayToUpdate)
                         self.delegate?.closeDetailViewAfterCollectionViewUpdate()
                     }
