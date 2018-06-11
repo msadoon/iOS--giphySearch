@@ -20,7 +20,7 @@ public class GSNetworkManager {
     
     static var currentSearchTerm:String = ""
     static private var currentOffset = 0
-    static var currentLimit = 20
+    static var currentLimit = 10
     
     static func getGiphs(searchTerm:String, completion: @escaping (_ status: Bool, _ records:[[String:AnyObject]])->()) {
         
