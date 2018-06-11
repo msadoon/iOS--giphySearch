@@ -1,16 +1,22 @@
 PODS:
-  - FLAnimatedImage (1.0.12)
+  - FLAnimatedImage (1.0.14)
 
 DEPENDENCIES:
-  - FLAnimatedImage (~> 1.0)
+  - FLAnimatedImage (from `https://github.com/msadoon/FLAnimatedImage.git`, commit `d1ea3322093ec9878fbfe3b8816b3a51c6fda4e2`)
 
-SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
-    - FLAnimatedImage
+EXTERNAL SOURCES:
+  FLAnimatedImage:
+    :commit: d1ea3322093ec9878fbfe3b8816b3a51c6fda4e2
+    :git: https://github.com/msadoon/FLAnimatedImage.git
+
+CHECKOUT OPTIONS:
+  FLAnimatedImage:
+    :commit: d1ea3322093ec9878fbfe3b8816b3a51c6fda4e2
+    :git: https://github.com/msadoon/FLAnimatedImage.git
 
 SPEC CHECKSUMS:
-  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  FLAnimatedImage: 58084d75cec819869a5ee8c76463df798dbaa906
 
-PODFILE CHECKSUM: 408ac33ec134fc7cf443e37fbc5fbe71df24f88f
+PODFILE CHECKSUM: 0c3b5220ec1764d0eb30ec3cdb0d71d905e97869
 
 COCOAPODS: 1.5.3
