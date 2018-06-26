@@ -10,4 +10,7 @@ Any issues, reach me at msadoon@live.com, I'll reply ASAP.
 
 Enjoy! ;)
 
-
+Known issues:
+1. Sometimes individual images dont load/missed when scrolling between images that do load. Suspect image is available in cache but cell not laying out in time to display.
+2. Double check searching for term with one result and loading "more", probably disable more button if no more offsets available.
+3. Crash occurs when reloading a searching a previously searched term and no images load.
